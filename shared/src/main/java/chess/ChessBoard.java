@@ -10,7 +10,8 @@ public class ChessBoard {
     private final ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
-        
+        //this is the constructor
+        //this can be how we start the board construction;
     }
 
     /**
@@ -33,7 +34,12 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         //return piece so that team color and piece type can be used for other functions such as moves
-        return board[position.getColumn()][position.getRow()];
+        if (board[position.getRow()][position.getColumn()] != null) {
+            return board[position.getColumn()][position.getRow()];
+        }
+        else{
+            return null;
+        }
     }
 
     /**
@@ -48,5 +54,6 @@ public class ChessBoard {
                 board[i][j] = null;
             }
         }
+        new ChessBoard(); //something like this?
     }
 }
