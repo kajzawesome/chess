@@ -22,7 +22,6 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         //add piece to board @ position
         board[position.getRow()][position.getColumn()] = piece;
-        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -33,7 +32,8 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        //return piece so that team color and piece type can be used for other functions such as moves
+        return board[position.getColumn()][position.getRow()];
     }
 
     /**
@@ -41,6 +41,12 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        //reset board to completely blank
+        //edit later to put pieces back in default position using set board function
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                board[i][j] = null;
+            }
+        }
     }
 }
