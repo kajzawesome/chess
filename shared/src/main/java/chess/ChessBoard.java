@@ -7,7 +7,7 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private final ChessPiece[][] board = new ChessPiece[8][8];
+    private ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
         //this is the constructor
@@ -35,7 +35,7 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         //return piece so that team color and piece type can be used for other functions such as moves
         if (board[position.getRow()][position.getColumn()] != null) {
-            return board[position.getColumn()][position.getRow()];
+            return board[position.getRow()][position.getColumn()];
         }
         else{
             return null;
