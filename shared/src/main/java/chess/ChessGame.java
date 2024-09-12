@@ -48,6 +48,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = getBoard().getPiece(startPosition);
+        Collection<ChessMove> movesList = new ArrayList<ChessMove>();
         if(piece == null ){
             return null;
         }
@@ -63,10 +64,31 @@ public class ChessGame {
             }
             else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
                 int j = 0;
-                for (int i = 0; i < 8; i++) {
+                for (int i = 1; i < 8; i++) {
                     j = i + j; //place holder
+                    if (i + startPosition.getRow() == 8 || i + startPosition.getColumn() == 8) {
+                        return null;
+                    }
+                    else{
+                        ChessMove move = new ChessMove(startPosition,(new ChessPosition(i+startPosition.getRow(),i+startPosition.getColumn())),null);
+                        movesList.add(move);
+                    }
                 }
-                return null;
+                for (int i = 1; i < 8; i++) {
+                    if (i + startPosition.getRow() == 8 || i - startPosition.getColumn() == 0) {
+
+                    }
+                }
+                for (int i = 1; i < 8; i++) {
+                    if (i - startPosition.getRow() == 0 || i - startPosition.getColumn() == 0) {
+
+                    }
+                }
+                for (int i = 1; i < 8; i++) {
+                    if (i - startPosition.getRow() == 0 || i + startPosition.getColumn() == 8) {
+                        j = i + i;
+                    }
+                }
             }
             else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
                 return null;
@@ -78,6 +100,7 @@ public class ChessGame {
                 throw new RuntimeException("Not implemented");
             }
         }
+        return movesList;
     }
 
     /**
