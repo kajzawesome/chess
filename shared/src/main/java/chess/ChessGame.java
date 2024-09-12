@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -46,7 +47,37 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = getBoard().getPiece(startPosition);
+        if(piece == null ){
+            return null;
+        }
+        else {
+            if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
+                return null;
+            }
+            else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                return null;
+            }
+            else if (piece.getPieceType() == ChessPiece.PieceType.ROOK){
+                return null;
+            }
+            else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                int j = 0;
+                for (int i = 0; i < 8; i++) {
+                    j = i + j; //place holder
+                }
+                return null;
+            }
+            else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                return null;
+            }
+            else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                return null;
+            }
+            else {
+                throw new RuntimeException("Not implemented");
+            }
+        }
     }
 
     /**
@@ -56,8 +87,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessPiece piece = getPiece(move.getStartPosition().getRow(), move.getStartPosition().getColumn());
-        board[move.getEndPosition().getRow()][move.getEndPosition().getColumn()] = piece;
+        /** ChessBoard board = getBoard();
+        * ChessPiece piece = board[move.getStartPosition().getRow()][move.getStartPosition().getColumn()];
+        * board[move.getEndPosition().getRow()][move.getEndPosition().getColumn()] = piece;
+        */
         throw new RuntimeException("Not implemented");
     }
 
