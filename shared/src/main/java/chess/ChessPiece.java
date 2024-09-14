@@ -69,7 +69,7 @@ public class ChessPiece {
         else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
             for (int i = 1; i < 8; i++) {
                 ChessPosition newPosition = new ChessPosition(i + myPosition.getRow(),i + myPosition.getColumn());
-                if (newPosition.getRow() < 9 || newPosition.getColumn() < 9) {
+                if ((newPosition.getRow() < 9 && newPosition.getColumn() < 9) &&  (board.getPiece(newPosition) == null)) {
                     ChessMove move = new ChessMove(myPosition,newPosition,null);
                     movesList.add(move);
                 }
@@ -84,7 +84,7 @@ public class ChessPiece {
             }
             for (int i = 1; i < 8; i++) {
                 ChessPosition newPosition = new ChessPosition(i + myPosition.getRow(),i - myPosition.getColumn());
-                if (newPosition.getRow() < 9 || newPosition.getColumn() > -1) {
+                if ((newPosition.getRow() < 9 && newPosition.getColumn() > 0) &&  (board.getPiece(newPosition) == null)) {
                     ChessMove move = new ChessMove(myPosition,newPosition,null);
                     movesList.add(move);
                 }
@@ -99,7 +99,7 @@ public class ChessPiece {
             }
             for (int i = 1; i < 8; i++) {
                 ChessPosition newPosition = new ChessPosition(i - myPosition.getRow(),i - myPosition.getColumn());
-                if (newPosition.getRow() > -1 || newPosition.getColumn() > -1) {
+                if ((newPosition.getRow() > 0 && newPosition.getColumn() > 0) &&  (board.getPiece(newPosition) == null)) {
                     ChessMove move = new ChessMove(myPosition,newPosition,null);
                     movesList.add(move);
                 }
@@ -114,7 +114,7 @@ public class ChessPiece {
             }
             for (int i = 1; i < 8; i++) {
                 ChessPosition newPosition = new ChessPosition(i - myPosition.getRow(),i + myPosition.getColumn());
-                if (newPosition.getRow() > -1 || newPosition.getColumn() < 9) {
+                if ((newPosition.getRow() > 0 && newPosition.getColumn() < 9) &&  (board.getPiece(newPosition) == null)) {
                     ChessMove move = new ChessMove(myPosition,newPosition,null);
                     movesList.add(move);
                 }
