@@ -34,8 +34,13 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         //return piece so that team color and piece type can be used for other functions such as moves
-        if (board[position.getRow()][position.getColumn()] != null) {
-            return board[position.getRow()][position.getColumn()];
+        if ((0 < position.getRow()) && (position.getRow() < 8) && (0 < position.getColumn()) && (position.getColumn() < 8)) {
+            if (board[position.getRow()][position.getColumn()] != null) {
+                return board[position.getRow()][position.getColumn()];
+            }
+            else {
+                return null;
+            }
         }
         else{
             return null;
