@@ -22,7 +22,7 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         //add piece to board @ position
-        board[position.getRow()][position.getColumn()] = piece;
+        board[(position.getRow()-1)][(position.getColumn()-1)] = piece;
     }
 
     /**
@@ -34,9 +34,9 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         //return piece so that team color and piece type can be used for other functions such as moves
-        if ((0 < position.getRow()) && (position.getRow() < 8) && (0 < position.getColumn()) && (position.getColumn() < 8)) {
-            if (board[position.getRow()][position.getColumn()] != null) {
-                return board[position.getRow()][position.getColumn()];
+        if ((0 < position.getRow()) && (position.getRow() < 9) && (0 < position.getColumn()) && (position.getColumn() < 9)) {
+            if (board[(position.getRow()-1)][(position.getColumn()-1)] != null) {
+                return board[(position.getRow()-1)][(position.getColumn()-1)];
             }
             else {
                 return null;
