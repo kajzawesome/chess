@@ -1,5 +1,8 @@
 package chess;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -10,8 +13,31 @@ public class ChessBoard {
     private final ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
-        //this is the constructor
-        //this can be how we start the board construction;
+        for (int i = 0; i < 8; i++){
+            //white on bottom then black on top
+            board[1][i] = new ChessPiece(WHITE, ChessPiece.PieceType.PAWN);
+            board[6][i] = new ChessPiece(BLACK, ChessPiece.PieceType.PAWN);
+            if(i == 0 || i == 7) {
+                board[0][i] = new ChessPiece(WHITE, ChessPiece.PieceType.ROOK);
+                board[7][i] = new ChessPiece(BLACK, ChessPiece.PieceType.ROOK);
+            }
+            if(i == 1 || i == 6) {
+                board[0][i] = new ChessPiece(WHITE, ChessPiece.PieceType.KNIGHT);
+                board[7][i] = new ChessPiece(BLACK, ChessPiece.PieceType.KNIGHT);
+            }
+            if(i == 2 || i == 5) {
+                board[0][i] = new ChessPiece(WHITE, ChessPiece.PieceType.BISHOP);
+                board[7][i] = new ChessPiece(BLACK, ChessPiece.PieceType.BISHOP);
+            }
+            if(i == 3) {
+                board[0][i] = new ChessPiece(WHITE, ChessPiece.PieceType.QUEEN);
+                board[7][i] = new ChessPiece(BLACK, ChessPiece.PieceType.KING);
+            }
+            if(i == 4) {
+                board[0][i] = new ChessPiece(WHITE, ChessPiece.PieceType.KING);
+                board[7][i] = new ChessPiece(BLACK, ChessPiece.PieceType.QUEEN);
+            }
+        }
     }
 
     /**
@@ -59,6 +85,5 @@ public class ChessBoard {
                 board[i][j] = null;
             }
         }
-        new ChessBoard(); //something like this?
     }
 }
