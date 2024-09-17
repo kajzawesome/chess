@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Arrays;
+
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 
@@ -13,6 +15,10 @@ public class ChessBoard {
     private final ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
+        InitializeBoard();
+    }
+    public void InitializeBoard(){
+        
         for (int i = 0; i < 8; i++){
             //white on bottom then black on top
             board[1][i] = new ChessPiece(WHITE, ChessPiece.PieceType.PAWN);
@@ -85,5 +91,20 @@ public class ChessBoard {
                 board[i][j] = null;
             }
         }
+        InitializeBoard();
+        //board = new ChessBoard();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Arrays.equals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(board);
     }
 }
