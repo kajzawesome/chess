@@ -101,26 +101,27 @@ public class ChessBoard {
         for (int i = 0; i < 8; i++) {
             string.append('|');
             for (int j = 0; j < 8; j++) {
-                if (board[i][j].getPieceType() == ChessPiece.PieceType.PAWN) {
+                ChessPiece piece = board[i][j];
+                if (piece.getPieceType() == null) {
+                    string.append(" |");
+                }
+                else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
                     string.append("p|");
                 }
-                else if (board[i][j].getPieceType() == ChessPiece.PieceType.ROOK) {
+                else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
                     string.append("r|");
                 }
-                else if (board[i][j].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
                     string.append("b|");
                 }
-                else if (board[i][j].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
                     string.append("n|");
                 }
-                else if (board[i][j].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
                     string.append("q|");
                 }
-                else if (board[i][j].getPieceType() == ChessPiece.PieceType.KING) {
+                else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
                     string.append("k|");
-                }
-                else {
-                    string.append(" |");
                 }
             }
             string.append("|/n");
