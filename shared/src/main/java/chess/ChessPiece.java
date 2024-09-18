@@ -111,7 +111,7 @@ public class ChessPiece {
                     ChessPosition down = new ChessPosition(myPosition.getRow()-1,myPosition.getColumn());
                     if (down.getRow() > 0 && board.getPiece(down) == null) {
                         ChessMove downMove1;
-                        if (down.getRow() == 8) {
+                        if (down.getRow() == 1) {
                             downMove1 = new ChessMove(myPosition, down, PieceType.QUEEN);
                             movesList.add(downMove1);
                             ChessMove downMove2 = new ChessMove(myPosition, down, PieceType.ROOK);
