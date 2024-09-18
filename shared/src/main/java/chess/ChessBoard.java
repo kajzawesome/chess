@@ -96,10 +96,44 @@ public class ChessBoard {
     }
 
     @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            string.append('|');
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j].getPieceType() == ChessPiece.PieceType.PAWN) {
+                    string.append("p|");
+                }
+                else if (board[i][j].getPieceType() == ChessPiece.PieceType.ROOK) {
+                    string.append("r|");
+                }
+                else if (board[i][j].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                    string.append("b|");
+                }
+                else if (board[i][j].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                    string.append("n|");
+                }
+                else if (board[i][j].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                    string.append("q|");
+                }
+                else if (board[i][j].getPieceType() == ChessPiece.PieceType.KING) {
+                    string.append("k|");
+                }
+                else {
+                    string.append(" |");
+                }
+            }
+            string.append("|/n");
+        }
+        return string.toString();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
+        System.out.print(toString());
         return Arrays.deepEquals(board, that.board);
     }
 
