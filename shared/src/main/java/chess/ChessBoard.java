@@ -37,11 +37,11 @@ public class ChessBoard {
             }
             if(i == 3) {
                 board[0][i] = new ChessPiece(WHITE, ChessPiece.PieceType.QUEEN);
-                board[7][i] = new ChessPiece(BLACK, ChessPiece.PieceType.KING);
+                board[7][i] = new ChessPiece(BLACK, ChessPiece.PieceType.QUEEN);
             }
             if(i == 4) {
                 board[0][i] = new ChessPiece(WHITE, ChessPiece.PieceType.KING);
-                board[7][i] = new ChessPiece(BLACK, ChessPiece.PieceType.QUEEN);
+                board[7][i] = new ChessPiece(BLACK, ChessPiece.PieceType.KING);
             }
         }
     }
@@ -99,10 +99,12 @@ public class ChessBoard {
     public String toString() {
         StringBuilder string = new StringBuilder();
         for (int i = 0; i < 8; i++) {
+            string.append(i +1);
+            string.append(" ");
             string.append('|');
             for (int j = 0; j < 8; j++) {
                 ChessPiece piece = board[i][j];
-                if (piece.getPieceType() == null) {
+                if (piece == null) {
                     string.append(" |");
                 }
                 else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
@@ -124,8 +126,9 @@ public class ChessBoard {
                     string.append("k|");
                 }
             }
-            string.append("|/n");
+            string.append("\n");
         }
+        string.append("   1 2 3 4 5 6 7 8 ");
         return string.toString();
     }
 
