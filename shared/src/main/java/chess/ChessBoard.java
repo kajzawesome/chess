@@ -91,7 +91,6 @@ public class ChessBoard {
             }
         }
         InitializeBoard();
-        //board = new ChessBoard();
     }
 
     @Override
