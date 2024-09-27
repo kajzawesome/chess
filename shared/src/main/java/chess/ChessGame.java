@@ -51,10 +51,30 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessPiece currPiece = getBoard().getPiece(startPosition);
-        Collection<ChessMove> possibilities = currPiece.pieceMoves(getBoard(),startPosition);
-
-        return possibilities;
+        if (isInCheck(currentBoard.getPiece(startPosition).getTeamColor())) {
+            if (isInCheckmate(currentBoard.getPiece(startPosition).getTeamColor())) {
+                return null;
+            }
+            //defend -> move king or find piece to move
+            return null;
+        }
+        else {
+            ChessPiece currPiece = getBoard().getPiece(startPosition);
+            Collection<ChessMove> possibilities = currPiece.pieceMoves(getBoard(), startPosition);
+            ChessBoard possibleBoard = currentBoard;
+            for (ChessMove move : possibilities) {
+                currentBoard = possibleBoard;
+                currentBoard.addPiece(move.getStartPosition(), null);
+                currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                if (isInCheck(currentBoard.getPiece(startPosition).getTeamColor())) {
+                    if (isInCheckmate(currentBoard.getPiece(startPosition).getTeamColor())) {
+                        possibilities.remove(move);
+                    }
+                    possibilities.remove(move);
+                }
+            }
+            return possibilities;
+        }
     }
 
     /**
@@ -64,7 +84,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> movesList = validMoves(move.getStartPosition());
+        if (movesList.contains(move)) {
+            currentBoard.addPiece(move.getStartPosition(),null);
+            currentBoard.addPiece(move.getEndPosition(),currentBoard.getPiece(move.getStartPosition()));
+        }
+        else {
+            throw new InvalidMoveException();
+        }
     }
 
     /**
@@ -75,6 +102,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         throw new RuntimeException("Not implemented");
+        //check every piece on other team if they can hit the king then if so see if king or something can move to stop check otherwise check mate
     }
 
     /**
@@ -83,6 +111,7 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
+
     public boolean isInCheckmate(TeamColor teamColor) {
         throw new RuntimeException("Not implemented");
     }
@@ -115,4 +144,6 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return currentBoard; //fix this for real
     }
+
+
 }
