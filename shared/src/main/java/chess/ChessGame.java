@@ -51,15 +51,16 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        Collection<ChessMove> possibilities = new ArrayList<>();
         if (currentBoard.getPiece(startPosition) != null) {
             if (isInCheck(currentBoard.getPiece(startPosition).getTeamColor())) {
                 if (isInCheckmate(currentBoard.getPiece(startPosition).getTeamColor())) {
                     return null;
                 }
                 ChessPiece currPiece = getBoard().getPiece(startPosition);
-                Collection<ChessMove> possibilities = currPiece.pieceMoves(getBoard(), startPosition);
+                possibilities = currPiece.pieceMoves(getBoard(), startPosition);
                 ChessBoard possibleBoard = currentBoard;
-                if (possibilities != null) {
+                if (!possibilities.isEmpty()) {
                     for (ChessMove move : possibilities) {
                         currentBoard = possibleBoard;
                         currentBoard.addPiece(move.getStartPosition(), null);
@@ -76,9 +77,9 @@ public class ChessGame {
             }
             else if (!isInStalemate(currentBoard.getPiece(startPosition).getTeamColor())){
                 ChessPiece currPiece = getBoard().getPiece(startPosition);
-                Collection<ChessMove> possibilities = currPiece.pieceMoves(getBoard(), startPosition);
+                possibilities = currPiece.pieceMoves(getBoard(), startPosition);
                 ChessBoard possibleBoard = currentBoard;
-                if (possibilities != null) {
+                if (!possibilities.isEmpty()) {
                     for (ChessMove move : possibilities) {
                         currentBoard = possibleBoard;
                         currentBoard.addPiece(move.getStartPosition(), null);
@@ -95,7 +96,7 @@ public class ChessGame {
                 return possibilities;
             }
         }
-        return null;
+        return possibilities;
     }
 
     /**
@@ -106,7 +107,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> movesList = validMoves(move.getStartPosition());
-        if (movesList != null) {
+        if (!movesList.isEmpty()) {
             if (movesList.contains(move)) {
                 currentBoard.addPiece(move.getStartPosition(), null);
                 currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
@@ -142,7 +143,7 @@ public class ChessGame {
                 if (currPiece != null && currPiece.getTeamColor() != teamColor) {
                     Collection<ChessMove> possibilities = currPiece.pieceMoves(getBoard(), currPosition);
                     ChessMove possibleMove = new ChessMove(currPosition, kingPosition, null);
-                    if (possibilities != null) {
+                    if (!possibilities.isEmpty()) {
                         if (currPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
                             ChessMove promoMove1 = new ChessMove(currPosition, kingPosition, ChessPiece.PieceType.QUEEN);
                             ChessMove promoMove2 = new ChessMove(currPosition, kingPosition, ChessPiece.PieceType.ROOK);
@@ -192,7 +193,7 @@ public class ChessGame {
         ChessPiece kingPiece = currentBoard.getPiece(kingPosition);
         Collection<ChessMove> kingMoves = kingPiece.pieceMoves(getBoard(), kingPosition);
         ChessBoard possibleBoard = currentBoard;
-        if (kingMoves != null) {
+        if (!kingMoves.isEmpty()) {
             for (ChessMove move : kingMoves) {
                 currentBoard = possibleBoard;
                 currentBoard.addPiece(move.getStartPosition(), null);
@@ -209,7 +210,7 @@ public class ChessGame {
                 ChessPiece currPiece = currentBoard.getPiece(currPosition);
                 if (currPiece != null && currPiece.getTeamColor() == teamColor) {
                     Collection<ChessMove> possibleMoves = currPiece.pieceMoves(getBoard(), currPosition);
-                    if (possibleMoves != null) {
+                    if (!possibleMoves.isEmpty()) {
                         for (ChessMove move : possibleMoves) {
                             currentBoard = possibleBoard;
                             currentBoard.addPiece(move.getStartPosition(), null);
@@ -242,7 +243,7 @@ public class ChessGame {
                 if (currPiece != null) {
                     if (currPiece.getPieceType() == ChessPiece.PieceType.KING && currPiece.getTeamColor() == teamColor) {
                         Collection<ChessMove> possibleMoves = currPiece.pieceMoves(getBoard(), currPosition);
-                        if (possibleMoves != null) {
+                        if (!possibleMoves.isEmpty()) {
                             ChessBoard possibleBoard = currentBoard;
                             for (ChessMove move : possibleMoves) {
                                 currentBoard = possibleBoard;
