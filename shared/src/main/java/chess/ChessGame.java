@@ -58,23 +58,27 @@ public class ChessGame {
                 }
                 //defend -> move king or find piece to move
                 return null;
-            } else {
+            }
+            else {
                 ChessPiece currPiece = getBoard().getPiece(startPosition);
                 Collection<ChessMove> possibilities = currPiece.pieceMoves(getBoard(), startPosition);
                 ChessBoard possibleBoard = currentBoard;
-                for (ChessMove move : possibilities) {
-                    currentBoard = possibleBoard;
-                    currentBoard.addPiece(move.getStartPosition(), null);
-                    currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
-                    if (currentBoard.getPiece(startPosition) != null) {
-                        if (isInCheck(currentBoard.getPiece(startPosition).getTeamColor())) {
-                            if (isInCheckmate(currentBoard.getPiece(startPosition).getTeamColor())) {
+                if (possibilities != null) {
+                    for (ChessMove move : possibilities) {
+                        currentBoard = possibleBoard;
+                        currentBoard.addPiece(move.getStartPosition(), null);
+                        currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                        if (currentBoard.getPiece(startPosition) != null) {
+                            if (isInCheck(currentBoard.getPiece(startPosition).getTeamColor())) {
+                                if (isInCheckmate(currentBoard.getPiece(startPosition).getTeamColor())) {
+                                    possibilities.remove(move);
+                                }
                                 possibilities.remove(move);
                             }
-                            possibilities.remove(move);
                         }
                     }
                 }
+                currentBoard = possibleBoard;
                 return possibilities;
             }
         }
@@ -177,7 +181,40 @@ public class ChessGame {
         assert kingPosition != null;
         ChessPiece kingPiece = currentBoard.getPiece(kingPosition);
         Collection<ChessMove> kingMoves = kingPiece.pieceMoves(getBoard(), kingPosition);
-        return kingMoves == null;
+        ChessBoard possibleBoard = currentBoard;
+        if (kingMoves != null) {
+            for (ChessMove move : kingMoves) {
+                currentBoard = possibleBoard;
+                currentBoard.addPiece(move.getStartPosition(), null);
+                currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                if (!isInCheck(teamColor)) {
+                    currentBoard = possibleBoard;
+                    return false;
+                }
+            }
+        }
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition currPosition = new ChessPosition(i,j);
+                ChessPiece currPiece = currentBoard.getPiece(currPosition);
+                if (currPiece != null && currPiece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> possibleMoves = currPiece.pieceMoves(getBoard(), currPosition);
+                    if (possibleMoves != null) {
+                        for (ChessMove move : possibleMoves) {
+                            currentBoard = possibleBoard;
+                            currentBoard.addPiece(move.getStartPosition(), null);
+                            currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                            if (!isInCheck(teamColor)) {
+                                currentBoard = possibleBoard;
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        currentBoard = possibleBoard;
+        return true;
     }
 
     /**
@@ -188,7 +225,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return true;
     }
 
     /**
