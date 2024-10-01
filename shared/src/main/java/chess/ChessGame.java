@@ -52,11 +52,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         if (currentBoard.getPiece(startPosition) != null) {
-            if (isInCheck(currentBoard.getPiece(startPosition).getTeamColor())) {
-                if (isInCheckmate(currentBoard.getPiece(startPosition).getTeamColor())) {
-                    return null;
-                }
-                //defend -> move king or find piece to move
+            if (isInCheckmate(currentBoard.getPiece(startPosition).getTeamColor())) {
                 return null;
             }
             else {
