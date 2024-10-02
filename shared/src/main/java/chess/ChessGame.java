@@ -125,7 +125,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition kingPosition= null;
+        ChessPosition kingPosition = null;
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
                 if (currentBoard.getPiece(new ChessPosition(i, j)) != null) {
@@ -135,7 +135,11 @@ public class ChessGame {
                     }
                 }
             }
+            if (kingPosition != null) {
+                break;
+            }
         }
+        assert kingPosition != null;
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
                 ChessPosition currPosition = new ChessPosition(i,j);
@@ -160,7 +164,8 @@ public class ChessGame {
                             } else if (possibilities.contains(promoMove4)) {
                                 return true;
                             }
-                        } else if (possibilities.contains(possibleMove)) {
+                        }
+                        else if (possibilities.contains(possibleMove)) {
                             return true;
                         }
                     }
@@ -187,6 +192,9 @@ public class ChessGame {
                         break;
                     }
                 }
+            }
+            if (kingPosition != null) {
+                break;
             }
         }
         assert kingPosition != null;
