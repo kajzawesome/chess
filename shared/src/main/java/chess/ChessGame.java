@@ -55,16 +55,15 @@ public class ChessGame {
         if (currentBoard.getPiece(startPosition) != null) {
             if (isInCheck(currentBoard.getPiece(startPosition).getTeamColor())) {
                 if (isInCheckmate(currentBoard.getPiece(startPosition).getTeamColor())) {
-                    return null;
+                    return possibilities;
                 }
                 ChessPiece currPiece = getBoard().getPiece(startPosition);
                 possibilities.addAll(currPiece.pieceMoves(getBoard(), startPosition));
-                ChessBoard possibleBoard = currentBoard;
                 if (!possibilities.isEmpty()) {
                     for (ChessMove move : possibilities) {
-                        currentBoard = possibleBoard;
-                        currentBoard.addPiece(move.getStartPosition(), null);
-                        currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                        ChessBoard possibleBoard = new ChessBoard(currentBoard);
+                        possibleBoard.addPiece(move.getEndPosition(), possibleBoard.getPiece(move.getStartPosition()));
+                        possibleBoard.addPiece(move.getStartPosition(), null);
                         if (isInCheck(possibleBoard.getPiece(startPosition).getTeamColor())) {
                             if (isInCheckmate(possibleBoard.getPiece(startPosition).getTeamColor())) {
                                 possibilities.remove(move);
@@ -75,23 +74,20 @@ public class ChessGame {
                         }
                     }
                 }
-                currentBoard = possibleBoard;
             }
             else if (!isInStalemate(currentBoard.getPiece(startPosition).getTeamColor())){
                 ChessPiece currPiece = getBoard().getPiece(startPosition);
                 possibilities.addAll(currPiece.pieceMoves(getBoard(), startPosition));
-                ChessBoard possibleBoard = currentBoard;
                 if (!possibilities.isEmpty()) {
                     for (ChessMove move : possibilities) {
-                        currentBoard = possibleBoard;
-                        currentBoard.addPiece(move.getStartPosition(), null);
-                        currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                        ChessBoard possibleBoard = new ChessBoard(currentBoard);
+                        possibleBoard.addPiece(move.getEndPosition(), possibleBoard.getPiece(move.getStartPosition()));
+                        possibleBoard.addPiece(move.getStartPosition(), null);
                         if (isInCheck(possibleBoard.getPiece(startPosition).getTeamColor()) || isInCheckmate(possibleBoard.getPiece(startPosition).getTeamColor())) {
                             possibilities.remove(move);
                         }
                     }
                 }
-                currentBoard = possibleBoard;
                 return possibilities;
             }
         }
@@ -110,8 +106,13 @@ public class ChessGame {
                 Collection<ChessMove> movesList = validMoves(move.getStartPosition());
                 if (!movesList.isEmpty()) {
                     if (movesList.contains(move)) {
+                        if (currentBoard.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null) {
+                            currentBoard.addPiece(move.getEndPosition(), new ChessPiece(currentBoard.getPiece(move.getStartPosition()).getTeamColor(),move.getPromotionPiece()));
+                        }
+                        else {
+                            currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                        }
                         currentBoard.addPiece(move.getStartPosition(), null);
-                        currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
                         if (getTeamTurn() == TeamColor.BLACK) {
                             setTeamTurn(TeamColor.WHITE);
                         }
@@ -212,14 +213,12 @@ public class ChessGame {
         assert kingPosition != null;
         ChessPiece kingPiece = currentBoard.getPiece(kingPosition);
         Collection<ChessMove> kingMoves = kingPiece.pieceMoves(getBoard(), kingPosition);
-        ChessBoard possibleBoard = currentBoard;
         if (!kingMoves.isEmpty()) {
             for (ChessMove move : kingMoves) {
-                currentBoard = possibleBoard;
-                currentBoard.addPiece(move.getStartPosition(), null);
-                currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                ChessBoard possibleBoard = new ChessBoard(currentBoard);
+                possibleBoard.addPiece(move.getEndPosition(), possibleBoard.getPiece(move.getStartPosition()));
+                possibleBoard.addPiece(move.getStartPosition(), null);
                 if (!isInCheck(teamColor)) {
-                    currentBoard = possibleBoard;
                     return false;
                 }
             }
@@ -232,11 +231,10 @@ public class ChessGame {
                     Collection<ChessMove> possibleMoves = currPiece.pieceMoves(getBoard(), currPosition);
                     if (!possibleMoves.isEmpty()) {
                         for (ChessMove move : possibleMoves) {
-                            currentBoard = possibleBoard;
-                            currentBoard.addPiece(move.getStartPosition(), null);
-                            currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                            ChessBoard possibleBoard = new ChessBoard(currentBoard);
+                            possibleBoard.addPiece(move.getEndPosition(), possibleBoard.getPiece(move.getStartPosition()));
+                            possibleBoard.addPiece(move.getStartPosition(), null);
                             if (!isInCheck(teamColor)) {
-                                currentBoard = possibleBoard;
                                 return false;
                             }
                         }
@@ -244,7 +242,6 @@ public class ChessGame {
                 }
             }
         }
-        currentBoard = possibleBoard;
         return true;
     }
 
@@ -264,17 +261,14 @@ public class ChessGame {
                     if (currPiece.getPieceType() == ChessPiece.PieceType.KING && currPiece.getTeamColor() == teamColor) {
                         Collection<ChessMove> possibleMoves = currPiece.pieceMoves(getBoard(), currPosition);
                         if (!possibleMoves.isEmpty()) {
-                            ChessBoard possibleBoard = currentBoard;
                             for (ChessMove move : possibleMoves) {
-                                currentBoard = possibleBoard;
-                                currentBoard.addPiece(move.getStartPosition(), null);
-                                currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                                ChessBoard possibleBoard = new ChessBoard(currentBoard);
+                                possibleBoard.addPiece(move.getEndPosition(), possibleBoard.getPiece(move.getStartPosition()));
+                                possibleBoard.addPiece(move.getStartPosition(), null);
                                 if (!isInCheck(teamColor)) {
-                                    currentBoard = possibleBoard;
                                     return false;
                                 }
                             }
-                            currentBoard = possibleBoard;
                         }
                     }
                 }

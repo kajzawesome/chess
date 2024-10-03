@@ -12,10 +12,27 @@ import static chess.ChessGame.TeamColor.WHITE;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private final ChessPiece[][] board = new ChessPiece[8][8];
+    private final ChessPiece[][] board;
 
     public ChessBoard() {
+        this.board = new ChessPiece[8][8];
     }
+
+    public ChessBoard(ChessBoard otherBoard) {
+        this.board = new ChessPiece[8][8];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece piece = otherBoard.board[i][j];
+                if (piece != null) {
+                    this.board[i][j] = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
+                }
+                else {
+                    this.board[i][j] = null;
+                }
+            }
+        }
+    }
+
     public void InitializeBoard(){
         
         for (int i = 0; i < 8; i++){
