@@ -23,14 +23,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        TeamColor currentTeam = teamColor;
-        if (teamColor == TeamColor.WHITE ) {
-            setTeamTurn(TeamColor.BLACK);
-        }
-        else {
-            setTeamTurn(TeamColor.WHITE);
-        }
-        return currentTeam;
+        return teamColor;
     }
 
     /**
@@ -65,7 +58,7 @@ public class ChessGame {
                     return null;
                 }
                 ChessPiece currPiece = getBoard().getPiece(startPosition);
-                possibilities = currPiece.pieceMoves(getBoard(), startPosition);
+                possibilities.addAll(currPiece.pieceMoves(getBoard(), startPosition));
                 ChessBoard possibleBoard = currentBoard;
                 if (!possibilities.isEmpty()) {
                     for (ChessMove move : possibilities) {
@@ -76,7 +69,9 @@ public class ChessGame {
                             if (isInCheckmate(possibleBoard.getPiece(startPosition).getTeamColor())) {
                                 possibilities.remove(move);
                             }
-                            possibilities.remove(move);
+                            else {
+                                possibilities.remove(move);
+                            }
                         }
                     }
                 }
@@ -84,17 +79,14 @@ public class ChessGame {
             }
             else if (!isInStalemate(currentBoard.getPiece(startPosition).getTeamColor())){
                 ChessPiece currPiece = getBoard().getPiece(startPosition);
-                possibilities = currPiece.pieceMoves(getBoard(), startPosition);
+                possibilities.addAll(currPiece.pieceMoves(getBoard(), startPosition));
                 ChessBoard possibleBoard = currentBoard;
                 if (!possibilities.isEmpty()) {
                     for (ChessMove move : possibilities) {
                         currentBoard = possibleBoard;
                         currentBoard.addPiece(move.getStartPosition(), null);
                         currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
-                        if (isInCheck(possibleBoard.getPiece(startPosition).getTeamColor())) {
-                            if (isInCheckmate(possibleBoard.getPiece(startPosition).getTeamColor())) {
-                                possibilities.remove(move);
-                            }
+                        if (isInCheck(possibleBoard.getPiece(startPosition).getTeamColor()) || isInCheckmate(possibleBoard.getPiece(startPosition).getTeamColor())) {
                             possibilities.remove(move);
                         }
                     }
@@ -113,12 +105,23 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (getBoard().getPiece(move.getStartPosition()).getTeamColor() == getTeamTurn()) {
-            Collection<ChessMove> movesList = validMoves(move.getStartPosition());
-            if (!movesList.isEmpty()) {
-                if (movesList.contains(move)) {
-                    currentBoard.addPiece(move.getStartPosition(), null);
-                    currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+        if (getBoard().getPiece(move.getStartPosition()) != null) {
+            if (getBoard().getPiece(move.getStartPosition()).getTeamColor() == getTeamTurn()) {
+                Collection<ChessMove> movesList = validMoves(move.getStartPosition());
+                if (!movesList.isEmpty()) {
+                    if (movesList.contains(move)) {
+                        currentBoard.addPiece(move.getStartPosition(), null);
+                        currentBoard.addPiece(move.getEndPosition(), currentBoard.getPiece(move.getStartPosition()));
+                        if (getTeamTurn() == TeamColor.BLACK) {
+                            setTeamTurn(TeamColor.WHITE);
+                        }
+                        else {
+                            setTeamTurn(TeamColor.BLACK);
+                        }
+                    }
+                    else {
+                        throw new InvalidMoveException();
+                    }
                 }
             }
         }
