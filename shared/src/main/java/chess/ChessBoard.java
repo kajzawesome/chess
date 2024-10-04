@@ -107,6 +107,7 @@ public class ChessBoard {
                 board[i][j] = null;
             }
         }
+        InitializeBoard();
     }
 
     @Override
