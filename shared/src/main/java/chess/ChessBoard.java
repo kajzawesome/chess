@@ -33,6 +33,19 @@ public class ChessBoard {
         }
     }
 
+    public void copyFrom(ChessBoard otherBoard) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece piece = otherBoard.board[i][j];
+                if (piece != null) {
+                    this.board[i][j] = new ChessPiece(piece); // Assuming deep copy of ChessPiece
+                } else {
+                    this.board[i][j] = null;
+                }
+            }
+        }
+    }
+
     public void InitializeBoard(){
         
         for (int i = 0; i < 8; i++){
