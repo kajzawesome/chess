@@ -24,7 +24,7 @@ public class ChessBoard {
             for (int j = 0; j < 8; j++) {
                 ChessPiece piece = otherBoard.board[i][j];
                 if (piece != null) {
-                    this.board[i][j] = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
+                    this.board[i][j] = new ChessPiece(otherBoard.board[i][j]);
                 }
                 else {
                     this.board[i][j] = null;
@@ -107,7 +107,6 @@ public class ChessBoard {
                 board[i][j] = null;
             }
         }
-        InitializeBoard();
     }
 
     @Override

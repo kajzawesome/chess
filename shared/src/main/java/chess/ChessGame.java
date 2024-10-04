@@ -15,7 +15,6 @@ public class ChessGame {
     ChessBoard currentBoard = new ChessBoard();
 
     public ChessGame() {
-        setBoard(currentBoard);
         setTeamTurn(TeamColor.WHITE);
     }
 
@@ -83,7 +82,7 @@ public class ChessGame {
                         ChessBoard possibleBoard = new ChessBoard(currentBoard);
                         possibleBoard.addPiece(move.getEndPosition(), possibleBoard.getPiece(move.getStartPosition()));
                         possibleBoard.addPiece(move.getStartPosition(), null);
-                        if (isInCheck(possibleBoard.getPiece(startPosition).getTeamColor()) || isInCheckmate(possibleBoard.getPiece(startPosition).getTeamColor())) {
+                        if (isInCheck(possibleBoard.getPiece(move.getEndPosition()).getTeamColor()) || isInCheckmate(possibleBoard.getPiece(move.getEndPosition()).getTeamColor())) {
                             possibilities.remove(move);
                         }
                     }
@@ -159,27 +158,11 @@ public class ChessGame {
                 ChessPiece currPiece = currentBoard.getPiece(currPosition);
                 if (currPiece != null && currPiece.getTeamColor() != teamColor) {
                     Collection<ChessMove> possibilities = currPiece.pieceMoves(getBoard(), currPosition);
-                    ChessMove possibleMove = new ChessMove(currPosition, kingPosition, null);
                     if (!possibilities.isEmpty()) {
-                        if (currPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                            ChessMove promoMove1 = new ChessMove(currPosition, kingPosition, ChessPiece.PieceType.QUEEN);
-                            ChessMove promoMove2 = new ChessMove(currPosition, kingPosition, ChessPiece.PieceType.ROOK);
-                            ChessMove promoMove3 = new ChessMove(currPosition, kingPosition, ChessPiece.PieceType.BISHOP);
-                            ChessMove promoMove4 = new ChessMove(currPosition, kingPosition, ChessPiece.PieceType.KNIGHT);
-                            if (possibilities.contains(possibleMove)) {
-                                return true;
-                            } else if (possibilities.contains(promoMove1)) {
-                                return true;
-                            } else if (possibilities.contains(promoMove2)) {
-                                return true;
-                            } else if (possibilities.contains(promoMove3)) {
-                                return true;
-                            } else if (possibilities.contains(promoMove4)) {
+                        for (ChessMove move : possibilities) {
+                            if (move.getEndPosition() == kingPosition) {
                                 return true;
                             }
-                        }
-                        else if (possibilities.contains(possibleMove)) {
-                            return true;
                         }
                     }
                 }
@@ -283,7 +266,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        board.resetBoard();
+        currentBoard = board;
     }
 
     /**
