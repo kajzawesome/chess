@@ -224,18 +224,23 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        for (int i = 1; i < 9; i++) {
-            for (int j = 1; j < 9; j++) {
-                ChessPosition currPosition = new ChessPosition(i,j);
-                ChessPiece currPiece = currentBoard.getPiece(currPosition);
-                if (currPiece != null && currPiece.getTeamColor() == teamColor) {
-                    if (!validMoves(currPosition).isEmpty()) {
-                        return false;
+        if (!isInCheck(teamColor)) {
+            for (int i = 1; i < 9; i++) {
+                for (int j = 1; j < 9; j++) {
+                    ChessPosition currPosition = new ChessPosition(i,j);
+                    ChessPiece currPiece = currentBoard.getPiece(currPosition);
+                    if (currPiece != null && currPiece.getTeamColor() == teamColor) {
+                        if (!validMoves(currPosition).isEmpty()) {
+                            return false;
+                        }
                     }
                 }
             }
+            return true;
         }
-        return true;
+        else {
+            return false;
+        }
     }
 
     /**
