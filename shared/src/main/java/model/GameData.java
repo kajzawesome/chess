@@ -1,14 +1,23 @@
 package model;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 
 public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
 
-    public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
-        this.gameID = gameID;
-        this.whiteUsername = whiteUsername;
-        this.blackUsername = blackUsername;
-        this.gameName = gameName;
-        this.game = game;
+    public String getWhitePlayer() {
+        return this.whiteUsername;
+    }
+
+    public String getBlackPlayer() {
+        return this.blackUsername;
+    }
+
+    public String getGameName() {
+        return gameName;
+    }
+
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }
