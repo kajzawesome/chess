@@ -17,6 +17,8 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
         return gameName;
     }
 
+    public ChessGame getGame() { return this.game;}
+
     public String toString() {
         return new Gson().toJson(this);
     }
