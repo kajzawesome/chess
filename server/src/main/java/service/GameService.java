@@ -37,13 +37,13 @@ public class GameService {
                     GameData copyGame = gameList.get(game.gameID());
                     int copyGameID = game.gameID();
                     gameList.remove(game.gameID());
-                    gameList.put(copyGameID,new GameData(copyGameID, u.getUser(auth), copyGame.blackUsername(), copyGame.gameName(), copyGame.getGame()));
+                    gameList.put(copyGameID,new GameData(copyGameID, u.getUser(auth).username(), copyGame.blackUsername(), copyGame.gameName(), copyGame.getGame()));
                 }
                 else if (game.blackUsername() == null) {
                     GameData copyGame = gameList.get(game.gameID());
                     int copyGameID = game.gameID();
                     gameList.remove(game.gameID());
-                    gameList.put(copyGameID,new GameData(copyGameID, copyGame.whiteUsername(), u.getUser(auth), copyGame.gameName(), copyGame.getGame()));
+                    gameList.put(copyGameID,new GameData(copyGameID, copyGame.whiteUsername(), u.getUser(auth).username(), copyGame.gameName(), copyGame.getGame()));
                 }
                 else {
                     throw new IllegalArgumentException("Already have player for that team");

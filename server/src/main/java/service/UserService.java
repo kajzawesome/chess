@@ -9,12 +9,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
-    HashMap<String, String> validAuth  = new HashMap<String, String>();
+    HashMap<String, UserData> validAuth  = new HashMap<String, UserData>();
     HashMap<String, String> users  = new HashMap<String, String>();
     public AuthData registerUser(UserData user) {
         //UserData registeredUser = new UserData(user.username(), user.password(), user.email());
         String userNewAuth = UUID.randomUUID().toString();
-        validAuth.put(userNewAuth,user.username());
+        validAuth.put(userNewAuth,user);
         users.put(user.username(),user.password());
         return new AuthData(userNewAuth, user.username());
     }
@@ -23,11 +23,11 @@ public class UserService {
         if (users.containsKey(user.username())) {
             if (Objects.equals(users.get(user.username()), user.password())) {
                 String userNewAuth = UUID.randomUUID().toString();
-                validAuth.put(userNewAuth, user.username());
+                validAuth.put(userNewAuth, user);
                 return new AuthData(userNewAuth, user.username());
             }
             else {
-                throw new IllegalArgumentException("incorrect password");
+                throw new IllegalArgumentException("incorrect password"); //fix error message header to appropriate number/format
             }
         }
         else {
@@ -38,17 +38,19 @@ public class UserService {
     public String logout(String auth) {
         if (validAuthToken(auth)) {
             validAuth.remove(auth);
-            return "";
+            return ""; //not working idk why
         }
         throw new IllegalArgumentException("User is not logged in");
     }
 
-    public String delete(){
+    public void deleteAuth() {
         validAuth.clear();
-        return "";
+    }
+    public void deleteUsers() {
+        users.clear();
     }
 
-    public String getUser(String auth) {
+    public UserData getUser(String auth) {
         return validAuth.get(auth);
     }
 
