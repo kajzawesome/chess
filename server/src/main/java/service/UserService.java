@@ -10,23 +10,29 @@ import java.util.UUID;
 
 public class UserService {
     HashMap<String, String> validAuth  = new HashMap<String, String>();
+    HashMap<String, String> users  = new HashMap<String, String>();
     public AuthData registerUser(UserData user) {
         //UserData registeredUser = new UserData(user.username(), user.password(), user.email());
         String userNewAuth = UUID.randomUUID().toString();
         validAuth.put(userNewAuth,user.username());
+        users.put(user.username(),user.password());
         return new AuthData(userNewAuth, user.username());
     }
 
     public AuthData login(UserData user) {
-        if (Objects.equals(user.getUsername(), user.username()) && Objects.equals(user.getPassword(), user.password())) {
-            String userNewAuth = UUID.randomUUID().toString();
-            validAuth.put(userNewAuth,user.username());
-            return new AuthData(userNewAuth, user.username());
+        if (users.containsKey(user.username())) {
+            if (Objects.equals(users.get(user.username()), user.password())) {
+                String userNewAuth = UUID.randomUUID().toString();
+                validAuth.put(userNewAuth, user.username());
+                return new AuthData(userNewAuth, user.username());
+            }
+            else {
+                throw new IllegalArgumentException("incorrect password");
+            }
         }
-        //else:
-        //String error = "{500: not found in database}";
-            //throw new DataAccessException(error);
-        return null;
+        else {
+            throw new IllegalArgumentException("username misspelled or is not registered user");
+        }
     }
 
     public String logout(String auth) {
