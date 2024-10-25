@@ -30,7 +30,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void createGames() throws ResponseParseException {
+    void createMultipleGames() throws ResponseParseException {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth = serviceUsers.registerUser(user);
         serviceGames.createGame(auth.authToken(), "Chess: the original");
