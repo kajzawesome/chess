@@ -57,4 +57,12 @@ public class UserService {
     public boolean validAuthToken(String  auth) {
         return auth != null && validAuth.containsKey(auth);
     }
+
+    public int numValidUsers() {
+        return validAuth.size();
+    }
+
+    public int numRegisteredUsers() {
+        return users.size();
+    }
 }
