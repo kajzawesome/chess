@@ -36,7 +36,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private String createUser(Request req, Response res) {
+    private String createUser(Request req, Response res) throws DataAccessException {
         UserService  s = new UserService();
         var g = new Gson();
         var newUser = g.fromJson(
@@ -45,7 +45,7 @@ public class Server {
         return g.toJson(createdUser);
     }
 
-    private String login(Request req, Response res)  {
+    private String login(Request req, Response res) throws DataAccessException {
         UserService s = new UserService();
         var g = new Gson();
         var userLoggingIn = g.fromJson(req.body(), UserData.class);
@@ -68,7 +68,7 @@ public class Server {
         return g.toJson(gameMade);
     }
 
-    private String listGames(Request req, Response res) {
+    private String listGames(Request req, Response res) throws DataAccessException {
         GameService game = new GameService();
         var g = new Gson();
         var allGames = game.listGames(req.headers().toString());

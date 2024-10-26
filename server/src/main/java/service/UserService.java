@@ -1,6 +1,8 @@
 package service;
 
+import dataaccess.AuthDataAccess;
 import dataaccess.DataAccessException;
+import dataaccess.UserDataAccess;
 import model.AuthData;
 import model.UserData;
 
@@ -9,22 +11,24 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
-    HashMap<String, UserData> validAuth  = new HashMap<String, UserData>();
-    HashMap<String, String> users  = new HashMap<String, String>();
-    public AuthData registerUser(UserData user) {
-        //UserData registeredUser = new UserData(user.username(), user.password(), user.email());
-        String userNewAuth = UUID.randomUUID().toString();
-        validAuth.put(userNewAuth,user);
-        users.put(user.username(),user.password());
-        return new AuthData(userNewAuth, user.username());
+    UserDataAccess userData = new UserDataAccess();
+    AuthDataAccess authData = new AuthDataAccess();
+
+    public AuthData registerUser(UserData user) throws DataAccessException {
+        if (userData.getUser(user.username()) == null) {
+            userData.addNewUser(user);
+            return authData.login(user);
+        }
+        else {
+            throw new DataAccessException("bad");
+        }
     }
 
-    public AuthData login(UserData user) {
-        if (users.containsKey(user.username())) {
-            if (Objects.equals(users.get(user.username()), user.password())) {
-                String userNewAuth = UUID.randomUUID().toString();
-                validAuth.put(userNewAuth, user);
-                return new AuthData(userNewAuth, user.username());
+    public AuthData login(UserData user) throws DataAccessException {
+        UserData currUser = userData.getUser(user.username());
+        if (currUser != null) {
+            if (Objects.equals(currUser.password(), user.password())) {
+                return authData.login(user);
             }
             else {
                 throw new IllegalArgumentException("incorrect password"); //fix error message header to appropriate number/format
@@ -36,33 +40,18 @@ public class UserService {
     }
 
     public String logout(String auth) {
-        if (validAuthToken(auth)) {
-            validAuth.remove(auth);
+        if (authData.alreadyLoggedIn(auth)) {
+            authData.logout(auth);
             return ""; //not working idk why
         }
         throw new IllegalArgumentException("User is not logged in");
     }
 
     public void deleteAuth() {
-        validAuth.clear();
+        authData.clearAllAuths();
     }
     public void deleteUsers() {
-        users.clear();
+        userData.clearAllUsers();
     }
 
-    public UserData getUser(String auth) {
-        return validAuth.get(auth);
-    }
-
-    public boolean validAuthToken(String  auth) {
-        return auth != null && validAuth.containsKey(auth);
-    }
-
-    public int numValidUsers() {
-        return validAuth.size();
-    }
-
-    public int numRegisteredUsers() {
-        return users.size();
-    }
 }

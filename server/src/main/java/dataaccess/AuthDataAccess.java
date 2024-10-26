@@ -1,5 +1,6 @@
 package dataaccess;
 
+import model.AuthData;
 import model.UserData;
 
 import java.util.HashMap;
@@ -8,10 +9,11 @@ import java.util.UUID;
 public class AuthDataAccess {
     HashMap<String, UserData> validAuth  = new HashMap<String, UserData>();
 
-    public void login(UserData user) throws DataAccessException {
+    public AuthData login(UserData user) throws DataAccessException {
         if (!alreadyLoggedIn(user)) {
             String userNewAuth = UUID.randomUUID().toString();
             validAuth.put(userNewAuth, user);
+            return new AuthData(userNewAuth, user.username());
         }
         else {
             throw new DataAccessException("Already logged in");

@@ -14,9 +14,12 @@ import java.util.Random;
 public class GameService {
     GameDataAccess gameData = new GameDataAccess();
     AuthDataAccess authData = new AuthDataAccess();
-    public String listGames(String auth) {
+    public String listGames(String auth) throws DataAccessException {
         if (authData.validateAuth(auth)) {
             return gameData.listGames();
+        }
+        else {
+            throw new DataAccessException("invalid auth");
         }
     }
 

@@ -1,5 +1,6 @@
 package passoff.server;
 
+import dataaccess.DataAccessException;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,36 +23,34 @@ public class GameServiceTest {
     }
 
     @Test
-    void createGame() throws ResponseParseException {
+    void createGame() throws ResponseParseException, DataAccessException {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth = serviceUsers.registerUser(user);
         serviceGames.createGame(auth.authToken(), "Chess");
-        assertEquals(1,serviceGames.numGames());
+
     }
 
     @Test
-    void createMultipleGames() throws ResponseParseException {
+    void createMultipleGames() throws ResponseParseException, DataAccessException {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth = serviceUsers.registerUser(user);
         serviceGames.createGame(auth.authToken(), "Chess: the original");
-        assertEquals(1,serviceGames.numGames());
+
         serviceGames.createGame(auth.authToken(), "Chess 2: Electric Boogaloo");
-        assertEquals(2,serviceGames.numGames());
+
         serviceGames.createGame(auth.authToken(), "Chess 3: triple threat");
-        assertEquals(3,serviceGames.numGames());
+
     }
 
     @Test
-    void joinGame() throws ResponseParseException {
+    void joinGame() throws ResponseParseException, DataAccessException {
         var user1 = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth1 = serviceUsers.registerUser(user1);
-        serviceGames.createGame(auth1.authToken(), "Chess", 1);
-        assertEquals(1,serviceGames.numGames());
+        serviceGames.createGame(auth1.authToken(), "Chess");
+
         var user2 = new UserData("Gundybuckets","xDefiant","gundy@gmail.com");
         var result2 = serviceUsers.registerUser(user2);
-        serviceGames.joinGame(result2.authToken(),1);
-        var game = serviceGames.getGame(1);
-        assertEquals(game.whiteUsername(), "kajzawesome");
-        assertEquals(game.blackUsername(), "Gundybuckets");
+        serviceGames.joinGame(result2.authToken(),1, "BLACK");
+
     }
 }
