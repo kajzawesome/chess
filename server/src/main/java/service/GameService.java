@@ -1,119 +1,55 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.AuthDataAccess;
+import dataaccess.DataAccessException;
+import dataaccess.GameDataAccess;
 import model.GameData;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 
 public class GameService {
-
-    HashMap<Integer, GameData> gameList = new HashMap<Integer, GameData>();
-    public String listGames() {
-        return  gameList.toString();
-    }
-
-    public  String createGame(String auth, String gameName) {
-        UserService u = new UserService();
-        Random random = new Random();
-        if (u.validAuthToken(auth)) {
-            int chessID = 0;
-            boolean b = validGameID(chessID);
-            while (!b) {
-                chessID = random.nextInt();
-                b = validGameID(chessID);
-            }
-            gameList.put(chessID, new GameData(chessID,u.getUser(auth).username(),null,gameName,new ChessGame()));
+    GameDataAccess gameData = new GameDataAccess();
+    AuthDataAccess authData = new AuthDataAccess();
+    public String listGames(String auth) {
+        if (authData.validateAuth(auth)) {
+            return gameData.listGames();
         }
-        return "";
     }
 
-    public  String createGame(String auth, String gameName, int gameNum) {
-        UserService u = new UserService();
-        if (u.validAuthToken(auth)) {
-            if (!gameList.containsKey(gameNum)) {
-                gameList.put(gameNum, new GameData(gameNum, u.getUser(auth).username(), null, gameName, new ChessGame()));
-            }
-            else {
-                throw new IllegalArgumentException("game ID taken");
-            }
+    public  int createGame(String auth, String gameName) throws DataAccessException {
+        if (authData.validateAuth(auth)) {
+            return gameData.createGame(auth, gameName);
         }
         else {
-            throw new IllegalArgumentException("not valid authToken");
+            throw new DataAccessException("not valid auth");
         }
-        return "";
     }
 
-    public String joinGame(String auth, GameData game) {
-        UserService u = new UserService();
-        if (u.validAuthToken(auth)) {
-            if (gameList.containsKey(game.gameID())) {
+    public String joinGame(String auth, int gameID, String teamColor) {
+        if (authData.validateAuth(auth)) {
+            var game = gameData.getGame(gameID);
                 //update the team desired to join with the new player if null else throw new
-                if (game.whiteUsername() == null) {
-                    GameData copyGame = gameList.get(game.gameID());
-                    int copyGameID = game.gameID();
-                    gameList.remove(game.gameID());
-                    gameList.put(copyGameID,new GameData(copyGameID, u.getUser(auth).username(), copyGame.blackUsername(), copyGame.gameName(), copyGame.getGame()));
+                if (Objects.equals(teamColor, "WHITE")) {
+                    var updatedGame = new GameData(gameID, authData.getUser(auth).username(), game.blackUsername(), game.gameName(),game.game());
+                    gameData.updateGame(updatedGame);
                 }
-                else if (game.blackUsername() == null) {
-                    GameData copyGame = gameList.get(game.gameID());
-                    int copyGameID = game.gameID();
-                    gameList.remove(game.gameID());
-                    gameList.put(copyGameID,new GameData(copyGameID, copyGame.whiteUsername(), u.getUser(auth).username(), copyGame.gameName(), copyGame.getGame()));
+                else if (Objects.equals(teamColor, "BLACK")) {
+                    var updatedGame = new GameData(gameID, game.whiteUsername(),authData.getUser(auth).username(), game.gameName(),game.game());
+                    gameData.updateGame(updatedGame);
                 }
                 else {
                     throw new IllegalArgumentException("Already have player for that team");
                 }
-            }
-            else {
-                throw new IllegalArgumentException("invalid game ID");
-            }
-        }
-        return "";
-    }
-
-    public String joinGame(String auth, int gameNum) {
-        UserService u = new UserService();
-        if (u.validAuthToken(auth)) {
-            if (gameList.containsKey(gameNum)) {
-                var game = gameList.get(gameNum);
-                //update the team desired to join with the new player if null else throw new
-                if (game.whiteUsername() == null) {
-                    GameData copyGame = gameList.get(game.gameID());
-                    int copyGameID = game.gameID();
-                    gameList.remove(game.gameID());
-                    gameList.put(copyGameID,new GameData(copyGameID, u.getUser(auth).username(), copyGame.blackUsername(), copyGame.gameName(), copyGame.getGame()));
-                }
-                else if (game.blackUsername() == null) {
-                    GameData copyGame = gameList.get(game.gameID());
-                    int copyGameID = game.gameID();
-                    gameList.remove(game.gameID());
-                    gameList.put(copyGameID,new GameData(copyGameID, copyGame.whiteUsername(), u.getUser(auth).username(), copyGame.gameName(), copyGame.getGame()));
-                }
-                else {
-                    throw new IllegalArgumentException("Already have player for that team");
-                }
-            }
-            else {
-                throw new IllegalArgumentException("invalid game ID");
-            }
         }
         return "";
     }
 
     public String deleteGames() {
-        gameList.clear();
+        gameData.clearAllGames();
         return "";
-    }
-
-    public boolean validGameID(int possibleID) {
-        return gameList.containsKey(possibleID);
-    }
-
-    public int numGames() {return gameList.size();}
-
-    public GameData getGame(int gameID) {
-        return gameList.get(gameID);
     }
 }

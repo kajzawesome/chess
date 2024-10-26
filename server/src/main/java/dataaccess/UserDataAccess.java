@@ -15,5 +15,5 @@ public class UserDataAccess {
         users.put(user.username(), user);
     }
 
-
+    public void clearAllUsers() {users.clear();}
 }

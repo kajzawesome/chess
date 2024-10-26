@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import model.GameData;
 import model.UserData;
 import service.GameService;
@@ -59,7 +60,7 @@ public class Server {
         return g.toJson(loggedOut);
     }
 
-    private String createGame(Request req, Response res) {
+    private String createGame(Request req, Response res) throws DataAccessException {
         GameService game = new GameService();
         var g = new Gson();
         var newGame = g.fromJson(req.body(), String.class);
@@ -70,15 +71,15 @@ public class Server {
     private String listGames(Request req, Response res) {
         GameService game = new GameService();
         var g = new Gson();
-        var games = game.listGames();
-        return g.toJson(games);
+        var allGames = game.listGames(req.headers().toString());
+        return g.toJson(allGames);
     }
 
     private Object joinGame(Request req, Response res) {
         GameService game = new GameService();
         var g  = new Gson();
-        var gameToJoin = g.fromJson(req.body(), GameData.class);
-        var gameJoined = game.joinGame(req.headers().toString(), gameToJoin);
+        var gameToJoin = g.fromJson(req.body(), String.class);
+        var gameJoined = game.joinGame(req.headers().toString(), 1, gameToJoin); //how to separate ID num from team color
         return g.toJson(gameJoined);
     }
 
