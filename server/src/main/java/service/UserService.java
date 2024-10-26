@@ -5,10 +5,9 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDataAccess;
 import model.AuthData;
 import model.UserData;
+import src.main.exception.ResponseException;
 
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.UUID;
 
 public class UserService {
     UserDataAccess userData = new UserDataAccess();
@@ -24,14 +23,14 @@ public class UserService {
         }
     }
 
-    public AuthData login(UserData user) throws DataAccessException {
+    public AuthData login(UserData user) throws ResponseException, DataAccessException {
         UserData currUser = userData.getUser(user.username());
         if (currUser != null) {
             if (Objects.equals(currUser.password(), user.password())) {
                 return authData.login(user);
             }
             else {
-                throw new IllegalArgumentException("incorrect password"); //fix error message header to appropriate number/format
+                throw new ResponseException(401,"Error: unauthorized"); //fix error message header to appropriate number/format
             }
         }
         else {

@@ -20,22 +20,17 @@ public class AuthDataAccess {
         }
     }
 
-    public boolean alreadyLoggedIn(UserData user) {
-        return validAuth.containsValue(user);
-    }
+    public boolean alreadyLoggedIn(UserData user) { return validAuth.containsValue(user);}
 
-    public boolean alreadyLoggedIn(String auth) {
-        return validAuth.containsKey(auth);
-    }
+    public boolean alreadyLoggedIn(String auth) { return validAuth.containsKey(auth);}
 
-    public void logout(String authToken) {
-        validAuth.remove(authToken);
-    }
+    public void logout(String authToken) { validAuth.remove(authToken);}
 
     public UserData getUser(String auth) { return validAuth.get(auth);}
 
-    public boolean validateAuth(String auth) {
-        return validAuth.containsKey(auth);
-    }
+    public boolean validateAuth(String auth) { return validAuth.containsKey(auth);}
+
     public void clearAllAuths() { validAuth.clear();}
+
+    public int loggedInUsers() { return validAuth.size();}
 }
