@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import exception.ResponseException;
 import model.GameData;
 
 import java.util.HashMap;
@@ -11,8 +12,8 @@ public class GameDataAccess {
     AuthDataAccess authTokenAccess = new AuthDataAccess();
     Random random = new Random();
 
-    public int createGame(String auth, String gameName) {
-        int chessID = 0;
+    public int createGame(String auth, String gameName) throws ResponseException {
+        int chessID = random.nextInt();
         boolean b = validGameID(chessID);
         while (!b) {
             chessID = random.nextInt();
@@ -22,22 +23,39 @@ public class GameDataAccess {
         return chessID;
     }
 
-    public GameData getGame(int gameID) {
-        return gameList.getOrDefault(gameID, null);
+    public GameData getGame(int gameID) throws ResponseException {
+        if (gameList.containsKey(gameID)) {
+            return gameList.getOrDefault(gameID, null);
+        }
+        else {
+            throw new ResponseException(500, "Error: (description of error)");
+        }
     }
 
     public boolean validGameID(int gameID) {
         return !gameList.containsKey(gameID);
     }
 
-    public void updateGame(GameData game) {
-        gameList.remove(game.gameID());
-        gameList.put(game.gameID(),game);
+    public void updateGame(GameData game) throws ResponseException {
+        if (gameList.containsKey(game.gameID())) {
+            gameList.remove(game.gameID());
+            gameList.put(game.gameID(), game);
+        }
+        else {
+            throw new ResponseException(500, "Error: (description of error)");
+        }
     }
 
     public String listGames() {
         return gameList.toString();
     }
 
-    public void clearAllGames() { gameList.clear();}
+    public void clearAllGames() throws ResponseException {
+        if (!gameList.isEmpty()) {
+            gameList.clear();
+        }
+        else {
+            throw new ResponseException(500, "Error: (description of error)");
+        }
+    }
 }

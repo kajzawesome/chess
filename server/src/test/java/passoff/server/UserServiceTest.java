@@ -1,5 +1,6 @@
 package passoff.server;
 
+import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ public class UserServiceTest {
     static final UserService service = new UserService();
 
     @BeforeEach
-    void clear() throws ResponseParseException {
+    void clear() throws ResponseException {
         service.deleteAuth();
         service.deleteUsers();
     }

@@ -2,7 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import model.GameData;
+import exception.ResponseException;
 import model.UserData;
 import service.GameService;
 import service.UserService;
@@ -36,7 +36,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private String createUser(Request req, Response res) throws DataAccessException {
+    private String createUser(Request req, Response res) throws ResponseException {
         UserService  s = new UserService();
         var g = new Gson();
         var newUser = g.fromJson(
@@ -45,7 +45,7 @@ public class Server {
         return g.toJson(createdUser);
     }
 
-    private String login(Request req, Response res) throws DataAccessException {
+    private String login(Request req, Response res) throws ResponseException {
         UserService s = new UserService();
         var g = new Gson();
         var userLoggingIn = g.fromJson(req.body(), UserData.class);
@@ -53,14 +53,14 @@ public class Server {
         return g.toJson(loggedIn);
     }
 
-    private Object logout(Request req, Response res)  {
+    private Object logout(Request req, Response res) throws ResponseException {
         UserService s = new UserService();
         var g = new Gson();
         var loggedOut = s.logout(req.headers().toString());
         return g.toJson(loggedOut);
     }
 
-    private String createGame(Request req, Response res) throws DataAccessException {
+    private String createGame(Request req, Response res) throws DataAccessException, ResponseException {
         GameService game = new GameService();
         var g = new Gson();
         var newGame = g.fromJson(req.body(), String.class);
@@ -68,14 +68,14 @@ public class Server {
         return g.toJson(gameMade);
     }
 
-    private String listGames(Request req, Response res) throws DataAccessException {
+    private String listGames(Request req, Response res) throws DataAccessException, ResponseException {
         GameService game = new GameService();
         var g = new Gson();
         var allGames = game.listGames(req.headers().toString());
         return g.toJson(allGames);
     }
 
-    private Object joinGame(Request req, Response res) {
+    private Object joinGame(Request req, Response res) throws ResponseException {
         GameService game = new GameService();
         var g  = new Gson();
         var gameToJoin = g.fromJson(req.body(), String.class);
@@ -83,7 +83,7 @@ public class Server {
         return g.toJson(gameJoined);
     }
 
-    private Object clear(Request req, Response res)  {
+    private Object clear(Request req, Response res) throws ResponseException {
         //delete auth, then games, then users
         GameService game = new GameService();
         UserService user = new UserService();

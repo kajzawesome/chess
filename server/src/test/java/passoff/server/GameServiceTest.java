@@ -1,11 +1,10 @@
 package passoff.server;
 
-import dataaccess.DataAccessException;
+import exception.ResponseException;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import passoff.exception.ResponseParseException;
 import service.GameService;
 import service.UserService;
 
@@ -18,12 +17,12 @@ public class GameServiceTest {
     static final UserService serviceUsers = new UserService();
 
     @BeforeEach
-    void clear() throws ResponseParseException {
+    void clear() throws ResponseException {
         serviceGames.deleteGames();
     }
 
     @Test
-    void createGame() throws ResponseParseException, DataAccessException {
+    void createGame() throws ResponseException {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth = serviceUsers.registerUser(user);
         serviceGames.createGame(auth.authToken(), "Chess");
@@ -31,7 +30,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void createMultipleGames() throws ResponseParseException, DataAccessException {
+    void createMultipleGames() throws ResponseException {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth = serviceUsers.registerUser(user);
         serviceGames.createGame(auth.authToken(), "Chess: the original");
@@ -43,7 +42,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void joinGame() throws ResponseParseException, DataAccessException {
+    void joinGame() throws ResponseException {
         var user1 = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth1 = serviceUsers.registerUser(user1);
         serviceGames.createGame(auth1.authToken(), "Chess");
