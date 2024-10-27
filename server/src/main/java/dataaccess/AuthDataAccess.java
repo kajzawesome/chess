@@ -10,18 +10,13 @@ import java.util.UUID;
 public class AuthDataAccess {
     HashMap<String, UserData> validAuth  = new HashMap<String, UserData>();
 
-    public AuthData login(UserData user) throws ResponseException {
-        if (!alreadyLoggedIn(user)) {
-            String userNewAuth = UUID.randomUUID().toString();
-            validAuth.put(userNewAuth, user);
-            return new AuthData(userNewAuth, user.username());
-        }
-        else {
-            throw new ResponseException(500, "Error: (description of error)");
-        }
+    public AuthData login(UserData user) {
+        String userNewAuth = UUID.randomUUID().toString();
+        System.out.println(userNewAuth);
+        validAuth.put(userNewAuth, user);
+        System.out.println(validAuth.size());
+        return new AuthData(userNewAuth, user.username());
     }
-
-    public boolean alreadyLoggedIn(UserData user) { return validAuth.containsValue(user);}
 
     public void logout(String authToken) throws ResponseException {
         if (validAuth.containsKey(authToken)) {
@@ -41,13 +36,8 @@ public class AuthDataAccess {
         }
     }
 
-    public boolean validateAuth(String auth) throws ResponseException {
-        if (validAuth.containsKey(auth)) {
-            return validAuth.containsKey(auth);
-        }
-        else {
-            throw new ResponseException(500, "Error: (description of error)");
-        }
+    public boolean validateAuth(String auth) {
+        return validAuth.containsKey(auth);
     }
 
     public void clearAllAuths() throws ResponseException {

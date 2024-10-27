@@ -26,12 +26,13 @@ public class UserDataAccess {
         return users.containsKey(user.username());
     }
 
-    public void clearAllUsers() throws ResponseException {
+    public void clearAllUsers() {
         if (!users.isEmpty()) {
             users.clear();
         }
-        else {
-            throw new ResponseException(500, "Error: (description of error)");
-        }
+    }
+
+    public int numUsers() {
+        return users.size();
     }
 }

@@ -9,17 +9,16 @@ import java.util.Random;
 
 public class GameDataAccess {
     HashMap<Integer, GameData> gameList = new HashMap<Integer, GameData>();
-    AuthDataAccess authTokenAccess = new AuthDataAccess();
     Random random = new Random();
 
-    public int createGame(String auth, String gameName) throws ResponseException {
+    public int createGame(String gameName) {
         int chessID = random.nextInt();
         boolean b = validGameID(chessID);
         while (!b) {
             chessID = random.nextInt();
             b = validGameID(chessID);
         }
-        gameList.put(chessID, new GameData(chessID,authTokenAccess.getUser(auth).username(),null,gameName,new ChessGame()));
+        gameList.put(chessID, new GameData(chessID,null,null,gameName,new ChessGame()));
         return chessID;
     }
 
@@ -50,12 +49,13 @@ public class GameDataAccess {
         return gameList.toString();
     }
 
-    public void clearAllGames() throws ResponseException {
+    public void clearAllGames() {
         if (!gameList.isEmpty()) {
             gameList.clear();
         }
-        else {
-            throw new ResponseException(500, "Error: (description of error)");
-        }
+    }
+
+    public int numGames() {
+        return gameList.size();
     }
 }

@@ -27,7 +27,7 @@ public class GameService {
 
     public  int createGame(String auth, String gameName) throws ResponseException {
         if (authData.validateAuth(auth)) {
-            return gameData.createGame(auth, gameName);
+            return gameData.createGame(gameName);
         }
         else {
             throw new ResponseException(401, "Error: unauthorized");

@@ -30,7 +30,7 @@ public class UserService {
                 return authData.login(user);
             }
             else {
-                throw new ResponseException(401, "Error: unauthorized"); //fix error message header to appropriate number/format
+                throw new ResponseException(401, "Error: unauthorized");
             }
         }
         else {
@@ -53,4 +53,11 @@ public class UserService {
         userData.clearAllUsers();
     }
 
+    public int numRegistered() {
+        return userData.numUsers();
+    }
+
+    public UserData getUser(String username) throws ResponseException {
+        return userData.getUser(username);
+    }
 }
