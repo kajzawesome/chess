@@ -32,22 +32,19 @@ public class AuthDataAccessTest {
     }
 
     @Test
-    void alreadyLoggedIn() throws ResponseException {
-        UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
-        AuthData auth = authData.login(user1);
-        assertTrue(authData.validateAuth(auth.authToken()));
-        ResponseException exception = assertThrows(ResponseException.class, () -> authData.login(user1));
-        assertEquals("Error: (description of error)", exception.getMessage());
-        assertEquals(500, exception.StatusCode());
-    }
-
-    @Test
     void logout() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth = authData.login(user1);
         assertTrue(authData.validateAuth(auth.authToken()));
         authData.logout(auth.authToken());
         assertEquals(0, authData.loggedInUsers());
+    }
+
+    @Test
+    void badLogout() {
+        ResponseException exception = assertThrows(ResponseException.class, () -> authData.logout("auth"));
+        assertEquals("Error: (description of error)", exception.getMessage());
+        assertEquals(500, exception.StatusCode());
     }
 
     @Test

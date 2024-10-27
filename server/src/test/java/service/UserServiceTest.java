@@ -96,4 +96,14 @@ public class UserServiceTest {
         assertEquals(0, service.loggedInUsers());
         assertEquals(3, service.numRegistered());
     }
+
+    @Test
+    void logoutBadAuth() throws ResponseException {
+        var user1 = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
+        var auth1 = service.registerUser(user1);
+        assertTrue(service.validateAuth(auth1.authToken()));
+        ResponseException exception = assertThrows(ResponseException.class, () -> service.logout("hi there"));
+        assertEquals("Error: unauthorized", exception.getMessage());
+        assertEquals(401, exception.StatusCode());
+    }
 }

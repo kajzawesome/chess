@@ -89,4 +89,14 @@ public class GameServiceTest {
         assertEquals("Error: bad request", exception.getMessage());
         assertEquals(400, exception.StatusCode());
     }
+
+    @Test
+    void createGameBadAuth() throws ResponseException {
+        var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
+        serviceUsers.registerUser(user);
+        serviceGames.updateAuthData(serviceUsers.getAuthData());
+        ResponseException exception = assertThrows(ResponseException.class, () -> serviceGames.createGame("bad auth", "Chess"));
+        assertEquals("Error: unauthorized", exception.getMessage());
+        assertEquals(401, exception.StatusCode());
+    }
 }
