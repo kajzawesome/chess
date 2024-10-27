@@ -9,10 +9,11 @@ import service.UserService;
 import spark.*;
 
 public class Server {
+    UserService  user = new UserService();
+    GameService game = new GameService();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
-
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
@@ -37,31 +38,30 @@ public class Server {
     }
 
     private String createUser(Request req, Response res) throws ResponseException {
-        UserService  s = new UserService();
         var g = new Gson();
         var newUser = g.fromJson(
                 req.body(), UserData.class);
-        var createdUser  = s.registerUser(newUser);
+        var createdUser  = user.registerUser(newUser);
+        game.updateAuthData(user.getAuthData());
         return g.toJson(createdUser);
     }
 
     private String login(Request req, Response res) throws ResponseException {
-        UserService s = new UserService();
         var g = new Gson();
         var userLoggingIn = g.fromJson(req.body(), UserData.class);
-        var loggedIn = s.login(userLoggingIn);
+        var loggedIn = user.login(userLoggingIn);
+        game.updateAuthData(user.getAuthData());
         return g.toJson(loggedIn);
     }
 
     private Object logout(Request req, Response res) throws ResponseException {
-        UserService s = new UserService();
         var g = new Gson();
-        var loggedOut = s.logout(req.headers().toString());
+        var loggedOut = user.logout(req.headers().toString());
+        game.updateAuthData(user.getAuthData());
         return g.toJson(loggedOut);
     }
 
     private String createGame(Request req, Response res) throws DataAccessException, ResponseException {
-        GameService game = new GameService();
         var g = new Gson();
         var newGame = g.fromJson(req.body(), String.class);
         var gameMade = game.createGame(req.headers().toString(), newGame);
@@ -69,14 +69,12 @@ public class Server {
     }
 
     private String listGames(Request req, Response res) throws DataAccessException, ResponseException {
-        GameService game = new GameService();
         var g = new Gson();
         var allGames = game.listGames(req.headers().toString());
         return g.toJson(allGames);
     }
 
     private Object joinGame(Request req, Response res) throws ResponseException {
-        GameService game = new GameService();
         var g  = new Gson();
         var gameToJoin = g.fromJson(req.body(), String.class);
         var gameJoined = game.joinGame(req.headers().toString(), 1, gameToJoin); //how to separate ID num from team color
@@ -84,12 +82,10 @@ public class Server {
     }
 
     private Object clear(Request req, Response res) throws ResponseException {
-        //delete auth, then games, then users
-        GameService game = new GameService();
-        UserService user = new UserService();
         game.deleteGames();
         user.deleteAuth();
         user.deleteUsers();
+        game.updateAuthData(null);
         return "";
     }
 

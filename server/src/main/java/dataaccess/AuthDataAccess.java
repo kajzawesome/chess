@@ -12,9 +12,7 @@ public class AuthDataAccess {
 
     public AuthData login(UserData user) {
         String userNewAuth = UUID.randomUUID().toString();
-        System.out.println(userNewAuth);
         validAuth.put(userNewAuth, user);
-        System.out.println(validAuth.size());
         return new AuthData(userNewAuth, user.username());
     }
 

@@ -1,20 +1,15 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.AuthDataAccess;
-import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 import exception.ResponseException;
 import model.GameData;
 
-import java.security.InvalidParameterException;
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.Random;
 
 public class GameService {
     GameDataAccess gameData = new GameDataAccess();
-    AuthDataAccess authData = new AuthDataAccess();
+    AuthDataAccess authData;
 
     public String listGames(String auth) throws ResponseException {
         if (authData.validateAuth(auth)) {
@@ -66,8 +61,21 @@ public class GameService {
         return "";
     }
 
-    public String deleteGames() throws ResponseException {
+    public String deleteGames() {
         gameData.clearAllGames();
+        authData = null;
         return "";
+    }
+
+    public void updateAuthData(AuthDataAccess auths) {
+        authData = auths;
+    }
+
+    public int numGames() {
+        return gameData.numGames();
+    }
+
+    public GameData getGame(int gameID) throws ResponseException {
+        return gameData.getGame(gameID);
     }
 }

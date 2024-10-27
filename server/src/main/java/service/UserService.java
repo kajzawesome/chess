@@ -14,7 +14,7 @@ public class UserService {
     AuthDataAccess authData = new AuthDataAccess();
 
     public AuthData registerUser(UserData user) throws ResponseException {
-        if (!userData.alreadyRegistered(user)) {
+        if (!userData.alreadyRegistered(user.username())) {
             userData.addNewUser(user);
             return authData.login(user);
         }
@@ -39,7 +39,7 @@ public class UserService {
     }
 
     public String logout(String auth) throws ResponseException {
-        if (authData.validateAuth(auth)) {
+        if (validateAuth(auth)) {
             authData.logout(auth);
             return "";
         }
@@ -59,5 +59,17 @@ public class UserService {
 
     public UserData getUser(String username) throws ResponseException {
         return userData.getUser(username);
+    }
+
+    public boolean validateAuth(String auth) {
+        return authData.validateAuth(auth);
+    }
+
+    public int loggedInUsers() {
+        return authData.loggedInUsers();
+    }
+
+    public AuthDataAccess getAuthData() {
+        return authData;
     }
 }

@@ -22,8 +22,8 @@ public class UserDataAccess {
         users.put(user.username(), user);
     }
 
-    public boolean alreadyRegistered(UserData user) {
-        return users.containsKey(user.username());
+    public boolean alreadyRegistered(String username) {
+        return users.containsKey(username);
     }
 
     public void clearAllUsers() {

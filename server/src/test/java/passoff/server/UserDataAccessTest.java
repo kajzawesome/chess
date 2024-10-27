@@ -62,6 +62,6 @@ public class UserDataAccessTest {
         UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());
-        assertTrue(userData.alreadyRegistered(user));
+        assertTrue(userData.alreadyRegistered("kajzawesome"));
     }
 }

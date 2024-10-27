@@ -1,6 +1,5 @@
 package passoff.server;
 
-import dataaccess.AuthDataAccess;
 import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,8 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class UserServiceTest {
-    static final UserService service = new UserService();
-    AuthDataAccess auths = new AuthDataAccess();
+    UserService service = new UserService();
 
     @BeforeEach
     void clear() throws ResponseException {
@@ -24,9 +22,8 @@ public class UserServiceTest {
     void registration() throws ResponseException {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth = service.registerUser(user);
-        System.out.println(auth.toString());
         assertEquals(1, service.numRegistered());
-        assertTrue(auths.validateAuth(auth.authToken()));
+        assertTrue(service.validateAuth(auth.authToken()));
         assertEquals(user, service.getUser(user.username()));
     }
 
@@ -35,15 +32,15 @@ public class UserServiceTest {
         var user1 = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth1 = service.registerUser(user1);
         assertEquals(1, service.numRegistered());
-        assertTrue(auths.validateAuth(auth1.authToken()));
+        assertTrue(service.validateAuth(auth1.authToken()));
         var user2 = new UserData("Karamel","yellow","A.Malolo@gmail.com");
         var auth2 = service.registerUser(user2);
         assertEquals(2, service.numRegistered());
-        assertTrue(auths.validateAuth(auth2.authToken()));
+        assertTrue(service.validateAuth(auth2.authToken()));
         var user3 = new UserData("Gundybuckets","xDefiant","gundy@gmail.com");
         var auth3 = service.registerUser(user3);
         assertEquals(3, service.numRegistered());
-        assertTrue(auths.validateAuth(auth3.authToken()));
+        assertTrue(service.validateAuth(auth3.authToken()));
     }
 
     @Test
@@ -51,14 +48,14 @@ public class UserServiceTest {
         var user1 = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth1 = service.registerUser(user1);
         assertEquals(1, service.numRegistered());
-        assertTrue(auths.validateAuth(auth1.authToken()));
+        assertTrue(service.validateAuth(auth1.authToken()));
         var user2 = new UserData("Karamel","yellow","A.Malolo@gmail.com");
         var auth2 = service.registerUser(user2);
         assertEquals(2, service.numRegistered());
-        assertTrue(auths.validateAuth(auth2.authToken()));
-        assertEquals(2, auths.loggedInUsers());
+        assertTrue(service.validateAuth(auth2.authToken()));
+        assertEquals(2, service.loggedInUsers());
         service.logout(auth2.authToken());
-        assertEquals(1, auths.loggedInUsers());
+        assertEquals(1, service.loggedInUsers());
     }
 
     @Test
@@ -75,8 +72,8 @@ public class UserServiceTest {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         assertEquals(0, service.numRegistered());
         var auth = service.registerUser(user);
-        assertTrue(auths.validateAuth(auth.authToken()));
-        assertEquals(1, auths.loggedInUsers());
+        assertTrue(service.validateAuth(auth.authToken()));
+        assertEquals(1, service.loggedInUsers());
     }
 
     @Test
@@ -85,19 +82,19 @@ public class UserServiceTest {
         var user2 = new UserData("Karamel","yellow","A.Malolo@gmail.com");
         var user3 = new UserData("Gundybuckets","xDefiant","gundy@gmail.com");
         var auth1 = service.registerUser(user1);
-        assertTrue(auths.validateAuth(auth1.authToken()));
+        assertTrue(service.validateAuth(auth1.authToken()));
         var auth2 = service.registerUser(user2);
-        assertTrue(auths.validateAuth(auth2.authToken()));
+        assertTrue(service.validateAuth(auth2.authToken()));
         var auth3 = service.registerUser(user3);
-        assertTrue(auths.validateAuth(auth3.authToken()));
+        assertTrue(service.validateAuth(auth3.authToken()));
         assertEquals(3, service.numRegistered());
-        assertEquals(3, auths.loggedInUsers());
+        assertEquals(3, service.loggedInUsers());
         service.logout(auth1.authToken());
-        assertEquals(2, auths.loggedInUsers());
+        assertEquals(2, service.loggedInUsers());
         assertEquals(3, service.numRegistered());
         service.logout(auth2.authToken());
         service.logout(auth3.authToken());
-        assertEquals(0, auths.loggedInUsers());
+        assertEquals(0, service.loggedInUsers());
         assertEquals(3, service.numRegistered());
     }
 }
