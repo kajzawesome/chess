@@ -4,10 +4,7 @@ import chess.ChessGame;
 import exception.ResponseException;
 import model.GameData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class GameDataAccess {
     HashMap<Integer, GameData> gameList = new HashMap<Integer, GameData>();
@@ -16,7 +13,7 @@ public class GameDataAccess {
     Random random = new Random();
 
     public int createGame(String gameName) {
-        int chessID = random.nextInt();
+        int chessID = random.nextInt(1000);
         boolean b = validGameID(chessID);
         while (!b) {
             chessID = random.nextInt();
@@ -25,6 +22,12 @@ public class GameDataAccess {
         GameData game = new GameData(chessID,null,null,gameName,new ChessGame());
         gameList.put(chessID, game);
         games.add(game);
+        games.sort(new Comparator<GameData>() {
+            @Override
+            public int compare(GameData o1, GameData o2) {
+                return o1.gameName().compareTo(o2.gameName());
+            }
+        });
         return chessID;
     }
 
@@ -39,6 +42,10 @@ public class GameDataAccess {
 
     public boolean validGameID(int gameID) {
         return !gameList.containsKey(gameID);
+    }
+
+    public boolean validateGameID(int gameID) {
+        return gameList.containsKey(gameID);
     }
 
     public void updateGame(GameData game) throws ResponseException {

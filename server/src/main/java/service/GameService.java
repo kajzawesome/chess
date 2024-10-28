@@ -36,29 +36,29 @@ public class GameService {
 
     public void joinGame(String auth, int gameID, String teamColor) throws ResponseException {
         if (authData.validateAuth(auth)) {
-            var game = gameData.getGame(gameID);
-                //update the team desired to join with the new player if null else throw new
+            if (gameData.validateGameID(gameID)) {
+                var game = gameData.getGame(gameID);
                 if (Objects.equals(teamColor, "WHITE")) {
                     if (game.whiteUsername() == null) {
                         var updatedGame = new GameData(gameID, authData.getUser(auth).username(), game.blackUsername(), game.gameName(), game.game());
                         gameData.updateGame(updatedGame);
+                    } else {
+                        throw new ResponseException(403, "Error: already taken");
                     }
-                    else {
-                        throw new ResponseException(400, "Error: bad request");
-                    }
-                }
-                else if (Objects.equals(teamColor, "BLACK")) {
+                } else if (Objects.equals(teamColor, "BLACK")) {
                     if (game.blackUsername() == null) {
                         var updatedGame = new GameData(gameID, game.whiteUsername(), authData.getUser(auth).username(), game.gameName(), game.game());
                         gameData.updateGame(updatedGame);
+                    } else {
+                        throw new ResponseException(403, "Error: already taken");
                     }
-                    else {
-                        throw new ResponseException(400, "Error: bad request");
-                    }
-                }
-                else {
+                } else {
                     throw new ResponseException(400, "Error: bad request");
                 }
+            }
+            else {
+                throw new ResponseException(400, "Error: bad request");
+            }
         }
         else {
             throw new ResponseException(401, "Error: unauthorized");
