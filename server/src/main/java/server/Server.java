@@ -9,6 +9,8 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
+import java.util.Map;
+
 public class Server {
     UserService  user = new UserService();
     GameService game = new GameService();
@@ -57,31 +59,31 @@ public class Server {
     }
 
     private Object logout(Request req, Response res) throws ResponseException {
-        var g = new Gson();
-        var loggedOut = user.logout(req.headers().toString());
+        user.logout(req.headers("authorization"));
         game.updateAuthData(user.getAuthData());
-        return g.toJson(loggedOut);
+        return "{}";
     }
 
     private String createGame(Request req, Response res) throws DataAccessException, ResponseException {
         var g = new Gson();
-        var newGame = g.fromJson(req.body(), GameData.class);
-        var gameMade = game.createGame(req.headers().toString(), newGame.gameName());
-        return g.toJson(gameMade);
+        record gameName(String gameName) {}
+        var newGame = g.fromJson(req.body(), gameName.class);
+        var gameMade = game.createGame(req.headers("authorization"), newGame.gameName);
+        return g.toJson(Map.of("gameID", gameMade));
     }
 
     private String listGames(Request req, Response res) throws DataAccessException, ResponseException {
         var g = new Gson();
-        var allGames = game.listGames(req.headers().toString());
+        var allGames = game.listGames(req.headers("authorization"));
         return g.toJson(allGames);
     }
 
     private Object joinGame(Request req, Response res) throws ResponseException {
         var g  = new Gson();
-        record gameJoinInfo(int gameID, String playerColor) {}
+        record gameJoinInfo(String playerColor, int gameID) {}
         var gameToJoin = g.fromJson(req.body(), gameJoinInfo.class);
-        var gameJoined = game.joinGame(req.headers().toString(), gameToJoin.gameID, gameToJoin.playerColor); //how to separate ID num from team color
-        return g.toJson(gameJoined);
+        game.joinGame(req.headers("authorization"), gameToJoin.gameID, gameToJoin.playerColor);
+        return "{}";
     }
 
     private Object clear(Request req, Response res) throws ResponseException {

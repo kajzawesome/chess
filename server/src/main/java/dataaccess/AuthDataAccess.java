@@ -17,7 +17,7 @@ public class AuthDataAccess {
     }
 
     public void logout(String authToken) throws ResponseException {
-        if (validAuth.containsKey(authToken)) {
+        if (validAuth != null && validAuth.containsKey(authToken)) {
             validAuth.remove(authToken);
         }
         else {

@@ -33,7 +33,7 @@ public class GameService {
         }
     }
 
-    public String joinGame(String auth, int gameID, String teamColor) throws ResponseException {
+    public void joinGame(String auth, int gameID, String teamColor) throws ResponseException {
         if (authData.validateAuth(auth)) {
             var game = gameData.getGame(gameID);
                 //update the team desired to join with the new player if null else throw new
@@ -62,13 +62,11 @@ public class GameService {
         else {
             throw new ResponseException(401, "Error: unauthorized");
         }
-        return "";
     }
 
-    public String deleteGames() {
+    public void deleteGames() {
         gameData.clearAllGames();
         authData = null;
-        return "";
     }
 
     public void updateAuthData(AuthDataAccess auths) {

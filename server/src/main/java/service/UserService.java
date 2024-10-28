@@ -15,8 +15,13 @@ public class UserService {
 
     public AuthData registerUser(UserData user) throws ResponseException {
         if (!userData.alreadyRegistered(user.username())) {
-            userData.addNewUser(user);
-            return authData.login(user);
+            if (user.password() != null) {
+                userData.addNewUser(user);
+                return authData.login(user);
+            }
+            else {
+                throw new ResponseException(400, "Error: bad request");
+            }
         }
         else {
             throw new ResponseException(403, "Error: already taken");
@@ -24,9 +29,8 @@ public class UserService {
     }
 
     public AuthData login(UserData user) throws ResponseException {
-        UserData currUser = userData.getUser(user.username());
-        if (currUser != null) {
-            if (Objects.equals(currUser.password(), user.password())) {
+        if (userData != null && userData.getUser(user.username()) != null) {
+            if (Objects.equals(userData.getUser(user.username()).password(), user.password())) {
                 return authData.login(user);
             }
             else {
@@ -41,9 +45,11 @@ public class UserService {
     public String logout(String auth) throws ResponseException {
         if (validateAuth(auth)) {
             authData.logout(auth);
-            return "";
+            return "{}";
         }
-        throw new ResponseException(401, "Error: unauthorized");
+        else {
+            throw new ResponseException(401, "Error: unauthorized");
+        }
     }
 
     public void deleteAuth() throws ResponseException {
