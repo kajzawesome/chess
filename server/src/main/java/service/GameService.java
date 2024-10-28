@@ -12,8 +12,12 @@ public class GameService {
     AuthDataAccess authData;
 
     public String listGames(String auth) throws ResponseException {
-        if (authData.validateAuth(auth)) {
-            return gameData.listGames();
+        if (authData != null) {
+            if (authData.validateAuth(auth)) {
+                return gameData.listGames();
+            } else {
+                throw new ResponseException(401, "Error: unauthorized");
+            }
         }
         else {
             throw new ResponseException(401, "Error: unauthorized");

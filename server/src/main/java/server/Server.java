@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import exception.ResponseException;
+import model.GameData;
 import model.UserData;
 import service.GameService;
 import service.UserService;
@@ -27,6 +28,7 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
+        Spark.exception(ResponseException.class, this::exceptionHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -63,8 +65,8 @@ public class Server {
 
     private String createGame(Request req, Response res) throws DataAccessException, ResponseException {
         var g = new Gson();
-        var newGame = g.fromJson(req.body(), String.class);
-        var gameMade = game.createGame(req.headers().toString(), newGame);
+        var newGame = g.fromJson(req.body(), GameData.class);
+        var gameMade = game.createGame(req.headers().toString(), newGame.gameName());
         return g.toJson(gameMade);
     }
 
@@ -76,8 +78,9 @@ public class Server {
 
     private Object joinGame(Request req, Response res) throws ResponseException {
         var g  = new Gson();
-        var gameToJoin = g.fromJson(req.body(), String.class);
-        var gameJoined = game.joinGame(req.headers().toString(), 1, gameToJoin); //how to separate ID num from team color
+        record gameJoinInfo(int gameID, String playerColor) {}
+        var gameToJoin = g.fromJson(req.body(), gameJoinInfo.class);
+        var gameJoined = game.joinGame(req.headers().toString(), gameToJoin.gameID, gameToJoin.playerColor); //how to separate ID num from team color
         return g.toJson(gameJoined);
     }
 
@@ -89,6 +92,10 @@ public class Server {
         return "";
     }
 
-
+    private void exceptionHandler(ResponseException exception, Request req, Response res) {
+        res.status(exception.StatusCode());
+        record ExceptionMessage(String message) {}
+        res.body(new Gson().toJson(new ExceptionMessage(exception.getMessage())));
+    }
 
 }

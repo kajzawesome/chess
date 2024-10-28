@@ -11,7 +11,7 @@ public class UserDataAccess {
     public UserData getUser(String username) throws ResponseException {
         var user = users.getOrDefault(username, null);
         if (user == null) {
-            throw new ResponseException(500, "Error: (description of error)");
+            throw new ResponseException(401, "Error: (description of error)");
         }
         else {
             return user;
