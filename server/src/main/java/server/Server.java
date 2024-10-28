@@ -9,6 +9,7 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
+import java.util.List;
 import java.util.Map;
 
 public class Server {
@@ -75,7 +76,8 @@ public class Server {
     private String listGames(Request req, Response res) throws DataAccessException, ResponseException {
         var g = new Gson();
         var allGames = game.listGames(req.headers("authorization"));
-        return g.toJson(allGames);
+        record gameList(String title, List<GameData> games) {}
+        return g.toJson(new gameList("games", allGames));
     }
 
     private Object joinGame(Request req, Response res) throws ResponseException {

@@ -4,11 +4,15 @@ import chess.ChessGame;
 import exception.ResponseException;
 import model.GameData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class GameDataAccess {
     HashMap<Integer, GameData> gameList = new HashMap<Integer, GameData>();
+    List<GameData> games = new ArrayList<>();
+
     Random random = new Random();
 
     public int createGame(String gameName) {
@@ -18,7 +22,9 @@ public class GameDataAccess {
             chessID = random.nextInt();
             b = validGameID(chessID);
         }
-        gameList.put(chessID, new GameData(chessID,null,null,gameName,new ChessGame()));
+        GameData game = new GameData(chessID,null,null,gameName,new ChessGame());
+        gameList.put(chessID, game);
+        games.add(game);
         return chessID;
     }
 
@@ -37,21 +43,25 @@ public class GameDataAccess {
 
     public void updateGame(GameData game) throws ResponseException {
         if (gameList.containsKey(game.gameID())) {
+            GameData oldGame = gameList.get(game.gameID());
+            games.remove(oldGame);
             gameList.remove(game.gameID());
             gameList.put(game.gameID(), game);
+            games.add(game);
         }
         else {
             throw new ResponseException(500, "Error: (description of error)");
         }
     }
 
-    public String listGames() {
-        return gameList.toString();
+    public List<GameData> listGames() {
+        return games;
     }
 
     public void clearAllGames() {
         if (!gameList.isEmpty()) {
             gameList.clear();
+            games.clear();
         }
     }
 

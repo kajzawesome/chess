@@ -5,13 +5,14 @@ import dataaccess.GameDataAccess;
 import exception.ResponseException;
 import model.GameData;
 
+import java.util.List;
 import java.util.Objects;
 
 public class GameService {
     GameDataAccess gameData = new GameDataAccess();
     AuthDataAccess authData;
 
-    public String listGames(String auth) throws ResponseException {
+    public List<GameData> listGames(String auth) throws ResponseException {
         if (authData != null) {
             if (authData.validateAuth(auth)) {
                 return gameData.listGames();
