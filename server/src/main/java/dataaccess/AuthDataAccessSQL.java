@@ -26,7 +26,7 @@ public class AuthDataAccessSQL {
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, auth);
                 try (var rs = ps.executeQuery()) {
-                    if (rs.next()) {
+                    if (rs.next()) { //idk if this applies to strings
                         return new UserData(null, null, null); //idk exactly what im doing here
                     }
                 }
