@@ -1,7 +1,7 @@
 package service;
 
-import dataaccess.AuthDataAccess;
-import dataaccess.GameDataAccess;
+import dataaccess.AuthDataAccessMemory;
+import dataaccess.GameDataAccessMemory;
 import exception.ResponseException;
 import model.GameData;
 
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class GameService {
-    GameDataAccess gameData = new GameDataAccess();
-    AuthDataAccess authData;
+    GameDataAccessMemory gameData = new GameDataAccessMemory();
+    AuthDataAccessMemory authData;
 
     public List<GameData> listGames(String auth) throws ResponseException {
         if (authData != null) {
@@ -70,7 +70,7 @@ public class GameService {
         authData = null;
     }
 
-    public void updateAuthData(AuthDataAccess auths) {
+    public void updateAuthData(AuthDataAccessMemory auths) {
         authData = auths;
     }
 

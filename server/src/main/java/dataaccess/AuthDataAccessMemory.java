@@ -7,7 +7,7 @@ import model.UserData;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class AuthDataAccess {
+public class AuthDataAccessMemory {
     HashMap<String, UserData> validAuth  = new HashMap<String, UserData>();
 
     public AuthData login(UserData user) {

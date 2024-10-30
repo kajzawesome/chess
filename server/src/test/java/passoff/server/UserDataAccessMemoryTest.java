@@ -1,6 +1,6 @@
 package passoff.server;
 
-import dataaccess.UserDataAccess;
+import dataaccess.UserDataAccessMemory;
 import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UserDataAccessTest {
-    UserDataAccess userData = new UserDataAccess();
+public class UserDataAccessMemoryTest {
+    UserDataAccessMemory userData = new UserDataAccessMemory();
 
     @BeforeEach
     void clear() {

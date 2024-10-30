@@ -1,6 +1,6 @@
 package passoff.server;
 
-import dataaccess.GameDataAccess;
+import dataaccess.GameDataAccessMemory;
 import exception.ResponseException;
 
 import model.GameData;
@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameDataAccessTest {
-    GameDataAccess gameData = new GameDataAccess();
+public class GameDataAccessMemoryTest {
+    GameDataAccessMemory gameData = new GameDataAccessMemory();
 
 
     @BeforeEach

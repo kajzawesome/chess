@@ -1,6 +1,6 @@
 package passoff.server;
 
-import dataaccess.AuthDataAccess;
+import dataaccess.AuthDataAccessMemory;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AuthDataAccessTest {
-    AuthDataAccess authData = new AuthDataAccess();
+public class AuthDataAccessMemoryTest {
+    AuthDataAccessMemory authData = new AuthDataAccessMemory();
 
     @BeforeEach
     void clear() throws ResponseException {

@@ -6,7 +6,7 @@ import model.GameData;
 
 import java.util.*;
 
-public class GameDataAccess {
+public class GameDataAccessMemory {
     HashMap<Integer, GameData> gameList = new HashMap<Integer, GameData>();
     List<GameData> games = new ArrayList<>();
 

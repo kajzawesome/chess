@@ -1,8 +1,7 @@
 package service;
 
-import dataaccess.AuthDataAccess;
-import dataaccess.DataAccessException;
-import dataaccess.UserDataAccess;
+import dataaccess.AuthDataAccessMemory;
+import dataaccess.UserDataAccessMemory;
 import model.AuthData;
 import model.UserData;
 import exception.ResponseException;
@@ -10,8 +9,8 @@ import exception.ResponseException;
 import java.util.Objects;
 
 public class UserService {
-    UserDataAccess userData = new UserDataAccess();
-    AuthDataAccess authData = new AuthDataAccess();
+    UserDataAccessMemory userData = new UserDataAccessMemory();
+    AuthDataAccessMemory authData = new AuthDataAccessMemory();
 
     public AuthData registerUser(UserData user) throws ResponseException {
         if (!userData.alreadyRegistered(user.username())) {
@@ -75,7 +74,7 @@ public class UserService {
         return authData.loggedInUsers();
     }
 
-    public AuthDataAccess getAuthData() {
+    public AuthDataAccessMemory getAuthData() {
         return authData;
     }
 }
