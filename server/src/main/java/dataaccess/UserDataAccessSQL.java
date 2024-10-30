@@ -49,7 +49,8 @@ public class UserDataAccessSQL {
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
+                    //preparedStatement.executeUpdate();
+                    int x = 0;
                 }
             }
         } catch (SQLException ex) {

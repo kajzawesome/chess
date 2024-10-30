@@ -20,7 +20,21 @@ public class AuthDataAccessSQL {
 
     }
 
-    public UserData getUser(String auth) {
+    public UserData getUser(String auth) throws DataAccessException, SQLException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT AuthToken, json FROM auths WHERE auth=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, auth);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new UserData(null, null, null); //idk exactly what im doing here
+                    }
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         return null;
     }
 
@@ -28,11 +42,22 @@ public class AuthDataAccessSQL {
         return true;
     }
 
-    public void clearAllAuths() {
 
+    public void clearAllAuths() throws SQLException {
+        String clear = "TRUNCATE TABLE auths";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(clear)) {
+                int x = 0;
+            }
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int loggedInUsers() {
+        //"""
+        //SELECT count(*) FROM auths
+        //"""
         return 0;
     }
 
@@ -51,7 +76,8 @@ public class AuthDataAccessSQL {
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
+                    //make table bit by bit
+                    int x = 0;
                 }
             }
         } catch (SQLException ex) {
