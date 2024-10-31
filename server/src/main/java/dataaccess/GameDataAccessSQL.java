@@ -61,12 +61,10 @@ public class GameDataAccessSQL {
     };
 
     private void configureDatabase() throws ResponseException, DataAccessException {
-        DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
-                    //preparedStatement.executeUpdate();
-                    int x = 0;
+                    preparedStatement.executeUpdate();
                 }
             }
         } catch (SQLException ex) {
