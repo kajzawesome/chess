@@ -34,10 +34,10 @@ public class UserDataAccessSQL {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  Users (
-              Username String NOT NULL,
-              User UserData NOT NULL,
-              Password String NOT NULL,
-              Email String,
+              'Username' String NOT NULL,
+              'Password' String NOT NULL,
+              'Email' String,
+              'User' json TEXT DEFAULT NULL,
               PRIMARY KEY (Username),
               INDEX(Password)
             )

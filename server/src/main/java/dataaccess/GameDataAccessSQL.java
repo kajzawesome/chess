@@ -47,12 +47,12 @@ public class GameDataAccessSQL {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  Games (
-              GameID int NOT NULL,
-              GameInfo GameData,
-              Name String NOT NULL,
-              White String,
-              Black String,
-              Game ChessGame NOT NULL,
+              'GameID' int NOT NULL,
+              'GameName' varchar(256) NOT NULL,
+              'White' String,
+              'Black' String,
+              'Game' ChessGame NOT NULL,
+              'GameData' json TEXT DEFAULT NULL,
               PRIMARY KEY(GameID),
               INDEX(White),
               INDEX(Black)

@@ -107,8 +107,9 @@ public class AuthDataAccessSQL {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  auths (
-              AuthToken String NOT NULL,
-              User String NOT NULL,
+              'AuthToken' String NOT NULL,
+              'User' String NOT NULL,
+              'AuthData' json TEXT DEFAULT NULL,
               PRIMARY KEY (AuthToken)
             )
             """
