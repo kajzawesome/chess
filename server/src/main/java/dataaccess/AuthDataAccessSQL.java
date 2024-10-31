@@ -29,7 +29,7 @@ public class AuthDataAccessSQL {
 
     public AuthData getUser(String auth) throws DataAccessException, SQLException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT AuthToken FROM auths WHERE auth=?";
+            var statement = "SELECT AuthToken FROM auth WHERE AuthToken = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, auth);
                 try (var rs = ps.executeQuery()) {
@@ -45,7 +45,7 @@ public class AuthDataAccessSQL {
     }
 
     public boolean validateAuth(String auth) {
-        var statement = String.format("SELECT AuthToken FROM auth WHERE AuthToken = '%s'", auth); //is this better than the above?
+        var statement = "SELECT AuthToken FROM auth WHERE AuthToken = ?";
 
         return true;
     }
@@ -116,6 +116,7 @@ public class AuthDataAccessSQL {
     };
 
     private void configureDatabase() throws ResponseException, DataAccessException {
+        DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
