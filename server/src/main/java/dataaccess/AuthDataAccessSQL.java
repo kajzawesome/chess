@@ -1,11 +1,13 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -17,14 +19,21 @@ public class AuthDataAccessSQL {
     }
 
     public AuthData login(UserData user) throws ResponseException {
-        var login = "INSERT INTO auth (AuthToken, User) VALUES (?, ?)";
-        var auth = executeUpdate(login, user.username());
-        return new AuthData(auth, user.username());
+        var login = "INSERT INTO auth (AuthToken, User, AuthData) VALUES (?, ?, ?)";
+        String userNewAuth = UUID.randomUUID().toString();
+        var auth = new AuthData(userNewAuth, user.username());
+        executeUpdate(login, userNewAuth, user.username(), new Gson().toJson(auth));
+        return auth;
     }
 
     public void logout(String authToken) throws ResponseException {
-        String logout = "DELETE FROM auth WHERE authToken=?";
-        executeUpdate(logout);
+        if (loggedInUsers() != 0 && validateAuth(authToken)) {
+            String logout = "DELETE FROM auth WHERE authToken=?";
+            executeUpdate(logout);
+        }
+        else {
+            throw new ResponseException(500, "Error: (description of error)");
+        }
     }
 
     public AuthData getUser(String auth) throws DataAccessException, SQLException {
@@ -45,9 +54,22 @@ public class AuthDataAccessSQL {
     }
 
     public boolean validateAuth(String auth) {
-        var statement = "SELECT AuthToken FROM auth WHERE AuthToken = ?";
-
-        return true;
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT AuthToken FROM auth WHERE AuthToken = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, auth);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return true;
+                    }
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
 
@@ -59,8 +81,13 @@ public class AuthDataAccessSQL {
     public int loggedInUsers() {
         String count = "SELECT count(*) FROM auths";
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(count)) {
+            try (var ps = conn.prepareStatement(count, RETURN_GENERATED_KEYS)) {
                 ps.setString(1,count);
+                ps.executeUpdate();
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException(e);
@@ -94,7 +121,6 @@ public class AuthDataAccessSQL {
                 if (rs.next()) {
                     return rs.getString(1);
                 }
-
                 return "";
             }
         } catch (SQLException e) {
