@@ -9,12 +9,16 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 public class Server {
     UserService  user = new UserService();
     GameService game = new GameService();
+
+    public Server() throws ResponseException, DataAccessException {
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -51,7 +55,7 @@ public class Server {
         return g.toJson(createdUser);
     }
 
-    private String login(Request req, Response res) throws ResponseException {
+    private String login(Request req, Response res) throws ResponseException, DataAccessException {
         var g = new Gson();
         var userLoggingIn = g.fromJson(req.body(), UserData.class);
         var loggedIn = user.login(userLoggingIn);
@@ -80,7 +84,7 @@ public class Server {
         return g.toJson(new gameList("games", allGames));
     }
 
-    private Object joinGame(Request req, Response res) throws ResponseException {
+    private Object joinGame(Request req, Response res) throws ResponseException, SQLException, DataAccessException {
         var g  = new Gson();
         record gameJoinInfo(String playerColor, int gameID) {}
         var gameToJoin = g.fromJson(req.body(), gameJoinInfo.class);
@@ -88,7 +92,7 @@ public class Server {
         return "{}";
     }
 
-    private Object clear(Request req, Response res) throws ResponseException {
+    private Object clear(Request req, Response res) throws ResponseException, SQLException {
         game.deleteGames();
         user.deleteAuth();
         user.deleteUsers();

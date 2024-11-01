@@ -1,16 +1,19 @@
 package service;
 
-import dataaccess.AuthDataAccessMemory;
-import dataaccess.GameDataAccessMemory;
+import dataaccess.*;
 import exception.ResponseException;
 import model.GameData;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
 public class GameService {
-    GameDataAccessMemory gameData = new GameDataAccessMemory();
-    AuthDataAccessMemory authData;
+    GameDataAccessSQL gameData = new GameDataAccessSQL();
+    AuthDataAccessSQL authData;
+
+    public GameService() throws ResponseException, DataAccessException {
+    }
 
     public List<GameData> listGames(String auth) throws ResponseException {
         if (authData != null) {
@@ -34,7 +37,7 @@ public class GameService {
         }
     }
 
-    public void joinGame(String auth, int gameID, String teamColor) throws ResponseException {
+    public void joinGame(String auth, int gameID, String teamColor) throws ResponseException, DataAccessException, SQLException {
         if (authData.validateAuth(auth)) {
             if (gameData.validateGameID(gameID)) {
                 var game = gameData.getGame(gameID);
@@ -65,12 +68,12 @@ public class GameService {
         }
     }
 
-    public void deleteGames() {
+    public void deleteGames() throws ResponseException {
         gameData.clearAllGames();
         authData = null;
     }
 
-    public void updateAuthData(AuthDataAccessMemory auths) {
+    public void updateAuthData(AuthDataAccessSQL auths) {
         authData = auths;
     }
 
@@ -78,7 +81,7 @@ public class GameService {
         return gameData.numGames();
     }
 
-    public GameData getGame(int gameID) throws ResponseException {
+    public GameData getGame(int gameID) throws ResponseException, DataAccessException {
         return gameData.getGame(gameID);
     }
 }

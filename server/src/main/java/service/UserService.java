@@ -1,16 +1,19 @@
 package service;
 
-import dataaccess.AuthDataAccessMemory;
-import dataaccess.UserDataAccessMemory;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import exception.ResponseException;
 
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class UserService {
-    UserDataAccessMemory userData = new UserDataAccessMemory();
-    AuthDataAccessMemory authData = new AuthDataAccessMemory();
+    UserDataAccessSQL userData = new UserDataAccessSQL();
+    AuthDataAccessSQL authData = new AuthDataAccessSQL();
+
+    public UserService() throws ResponseException, DataAccessException {
+    }
 
     public AuthData registerUser(UserData user) throws ResponseException {
         if (!userData.alreadyRegistered(user.username())) {
@@ -27,7 +30,7 @@ public class UserService {
         }
     }
 
-    public AuthData login(UserData user) throws ResponseException {
+    public AuthData login(UserData user) throws ResponseException, DataAccessException {
         if (userData != null && userData.getUser(user.username()) != null) {
             if (Objects.equals(userData.getUser(user.username()).password(), user.password())) {
                 return authData.login(user);
@@ -51,7 +54,7 @@ public class UserService {
         }
     }
 
-    public void deleteAuth() throws ResponseException {
+    public void deleteAuth() throws ResponseException, SQLException {
         authData.clearAllAuths();
     }
     public void deleteUsers() throws ResponseException {
@@ -62,7 +65,7 @@ public class UserService {
         return userData.numUsers();
     }
 
-    public UserData getUser(String username) throws ResponseException {
+    public UserData getUser(String username) throws ResponseException, DataAccessException {
         return userData.getUser(username);
     }
 
@@ -74,7 +77,7 @@ public class UserService {
         return authData.loggedInUsers();
     }
 
-    public AuthDataAccessMemory getAuthData() {
+    public AuthDataAccessSQL getAuthData() {
         return authData;
     }
 }
