@@ -1,26 +1,46 @@
 package service;
 
+import dataaccess.DataAccessException;
 import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class GameServiceTest {
-    static final GameService serviceGames = new GameService();
-    static final UserService serviceUsers = new UserService();
+    static final GameService serviceGames;
+
+    static {
+        try {
+            serviceGames = new GameService();
+        } catch (ResponseException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static final UserService serviceUsers;
+
+    static {
+        try {
+            serviceUsers = new UserService();
+        } catch (ResponseException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @BeforeEach
-    void clear() throws ResponseException {
+    void clear() throws ResponseException, SQLException {
         serviceGames.deleteGames();
         serviceUsers.deleteUsers();
         serviceUsers.deleteAuth();
     }
 
     @Test
-    void createGame() throws ResponseException {
+    void createGame() throws ResponseException, DataAccessException {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth = serviceUsers.registerUser(user);
         serviceGames.updateAuthData(serviceUsers.getAuthData());
@@ -43,7 +63,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void joinGame() throws ResponseException {
+    void joinGame() throws ResponseException, DataAccessException, SQLException {
         var user1 = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth1 = serviceUsers.registerUser(user1);
         serviceGames.updateAuthData(serviceUsers.getAuthData());
@@ -56,7 +76,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void doubleJoinGame() throws ResponseException {
+    void doubleJoinGame() throws ResponseException, SQLException, DataAccessException {
         var user1 = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth1 = serviceUsers.registerUser(user1);
         serviceGames.updateAuthData(serviceUsers.getAuthData());
@@ -71,7 +91,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void gameAlreadyFull() throws ResponseException {
+    void gameAlreadyFull() throws ResponseException, SQLException, DataAccessException {
         var user1 = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth1 = serviceUsers.registerUser(user1);
         serviceGames.updateAuthData(serviceUsers.getAuthData());

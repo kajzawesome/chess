@@ -49,7 +49,7 @@ public class GameDataAccessMemory {
     }
 
     public void updateGame(GameData game) throws ResponseException {
-        if (gameList.containsKey(game.gameID())) {
+        if (validateGameID(game.gameID())) {
             GameData oldGame = gameList.get(game.gameID());
             games.remove(oldGame);
             gameList.remove(game.gameID());

@@ -8,39 +8,57 @@ import model.GameData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class GameDataAccessSQL {
 
+    Random random = new Random();
+
     public GameDataAccessSQL() throws ResponseException, DataAccessException {
         configureDatabase();
     }
 
-    public int createGame(String gameName) {
-
-        return 1;
+    public int createGame(String gameName) throws ResponseException {
+        int chessID = random.nextInt(1000);
+        boolean b = validGameID(chessID);
+        while (!b) {
+            chessID = random.nextInt();
+            b = validGameID(chessID);
+        }
+        ChessGame game = new ChessGame();
+        String statement = "INSERT INTO Games (GameID, GameName, White, Black, Game, GameData) VALUES (?, ?, ?, ?, ?, ?)";
+        GameData gameInfo = new GameData(chessID, null, null, gameName, game);
+        executeUpdate(statement, chessID, gameName, null, null, game, gameInfo);
+        return chessID;
     }
 
-    public GameData getGame(int gameID) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT GameID FROM Games WHERE GameID = ?";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setInt(1, gameID);
-                try (var rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return readGame(rs);
+    public GameData getGame(int gameID) throws DataAccessException, ResponseException {
+        if (validateGameID(gameID)) {
+            try (var conn = DatabaseManager.getConnection()) {
+                var statement = "SELECT GameID FROM Games WHERE GameID = ?";
+                try (var ps = conn.prepareStatement(statement)) {
+                    ps.setInt(1, gameID);
+                    try (var rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            return readGame(rs);
+                        }
                     }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return null;
         }
-        return null;
+        else {
+            throw new ResponseException(500, "Error: (description of error)");
+        }
     }
 
     public boolean validGameID(int gameID) {
@@ -75,12 +93,18 @@ public class GameDataAccessSQL {
         }
     }
 
-    public void updateGame(GameData game) {
-        //"UPDATE Games SET col = ? ... WHERE gameID"
+    public void updateGame(GameData game) throws ResponseException {
+       String statement = "UPDATE Games SET White = ?, Black = ?, Game = ?, GameData = ?, WHERE gameID = ?";
+        executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.getGame(), new Gson().toJson(game), game.gameID());
     }
 
     public List<GameData> listGames() {
-        return null;
+        List<GameData> games = new ArrayList<>();
+        int numGames = numGames();
+        for (int i = 0; i < numGames; i++) {
+            i = i+1; //placeholder
+        }
+        return games;
     }
 
     public void clearAllGames() throws ResponseException {

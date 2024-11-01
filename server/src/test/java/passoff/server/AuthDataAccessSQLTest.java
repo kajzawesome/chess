@@ -1,19 +1,25 @@
 package passoff.server;
 
-import dataaccess.AuthDataAccessMemory;
+import dataaccess.AuthDataAccessSQL;
+import dataaccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AuthDataAccessMemoryTest {
-    AuthDataAccessMemory authData = new AuthDataAccessMemory();
+public class AuthDataAccessSQLTest {
+    AuthDataAccessSQL authData = new AuthDataAccessSQL();
+
+    public AuthDataAccessSQLTest() throws ResponseException, DataAccessException {
+    }
 
     @BeforeEach
-    void clear() throws ResponseException {
+    void clear() throws ResponseException, SQLException {
         authData.clearAllAuths();
     }
 
@@ -25,10 +31,10 @@ public class AuthDataAccessMemoryTest {
     }
 
     @Test
-    void getRequest() throws ResponseException {
+    void getRequest() throws ResponseException, SQLException, DataAccessException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth = authData.login(user1);
-        assertEquals(authData.getUser(auth.authToken()), user1);
+        assertEquals(authData.getUser(auth.authToken()).username(), user1.username());
     }
 
     @Test
@@ -48,7 +54,7 @@ public class AuthDataAccessMemoryTest {
     }
 
     @Test
-    void clearAll() throws ResponseException {
+    void clearAll() throws ResponseException, SQLException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth1 = authData.login(user1);
         UserData user2 = new UserData("Gundybuckets", "xDefiant", "gundy@gmail.com");
