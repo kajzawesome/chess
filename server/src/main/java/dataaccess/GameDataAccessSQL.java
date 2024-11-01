@@ -76,7 +76,7 @@ public class GameDataAccessSQL {
     }
 
     public void updateGame(GameData game) {
-
+        //"UPDATE Games SET col = ? ... WHERE gameID"
     }
 
     public List<GameData> listGames() {
