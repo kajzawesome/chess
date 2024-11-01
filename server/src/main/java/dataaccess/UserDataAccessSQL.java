@@ -93,7 +93,7 @@ public class UserDataAccessSQL {
                     switch (param) {
                         case String p -> ps.setString(i + 1, p);
                         case Integer p -> ps.setInt(i + 1, p);
-                        case AuthData p -> ps.setString(i + 1, p.toString());
+                        case UserData p -> ps.setString(i + 1, p.toString());
                         case null -> ps.setNull(i + 1, NULL);
                         default -> {
                         }
