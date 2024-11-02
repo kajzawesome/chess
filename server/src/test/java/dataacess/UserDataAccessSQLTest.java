@@ -1,4 +1,4 @@
-package passoff.server;
+package dataacess;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDataAccessSQL;
@@ -6,7 +6,6 @@ import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mindrot.jbcrypt.BCrypt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

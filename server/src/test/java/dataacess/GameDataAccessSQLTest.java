@@ -1,4 +1,4 @@
-package passoff.server;
+package dataacess;
 
 import dataaccess.DataAccessException;
 import dataaccess.GameDataAccessSQL;

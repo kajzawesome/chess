@@ -19,7 +19,7 @@ public class AuthDataAccessSQL {
     }
 
     public AuthData login(UserData user) throws ResponseException {
-        var login = "INSERT INTO auths (AuthToken, User, AuthData) VALUES (?, ?, ?)";
+        var login = "INSERT INTO Auths (AuthToken, User, AuthData) VALUES (?, ?, ?)";
         String userNewAuth = UUID.randomUUID().toString();
         var auth = new AuthData(userNewAuth, user.username());
         executeUpdate(login, userNewAuth, user.username(), new Gson().toJson(auth));
@@ -28,7 +28,7 @@ public class AuthDataAccessSQL {
 
     public void logout(String authToken) throws ResponseException {
         if (validateAuth(authToken)) {
-            String logout = "DELETE FROM auths WHERE authToken = ?";
+            String logout = "DELETE FROM Auths WHERE AuthToken = ?";
             executeUpdate(logout, authToken);
         }
         else {
@@ -38,7 +38,7 @@ public class AuthDataAccessSQL {
 
     public AuthData getUser(String auth) throws DataAccessException, SQLException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT * FROM auths WHERE AuthToken = ?";
+            var statement = "SELECT * FROM Auths WHERE AuthToken = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, auth);
                 try (var rs = ps.executeQuery()) {
@@ -55,7 +55,7 @@ public class AuthDataAccessSQL {
 
     public boolean validateAuth(String auth) {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT AuthToken FROM auths WHERE AuthToken = ?";
+            var statement = "SELECT AuthToken FROM Auths WHERE AuthToken = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, auth);
                 try (var rs = ps.executeQuery()) {
@@ -74,12 +74,12 @@ public class AuthDataAccessSQL {
 
 
     public void clearAllAuths() throws SQLException, ResponseException {
-        String clear = "TRUNCATE TABLE auths";
+        String clear = "TRUNCATE TABLE Auths";
         executeUpdate(clear);
     }
 
     public int loggedInUsers() {
-        String countQuery = "SELECT count(*) FROM auths";
+        String countQuery = "SELECT count(*) FROM Auths";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(countQuery)) {
                 var rs = ps.executeQuery(); // Execute query and get the result set
@@ -130,7 +130,7 @@ public class AuthDataAccessSQL {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  auths (
+            CREATE TABLE IF NOT EXISTS  Auths (
               AuthToken TEXT NOT NULL,
               User TEXT NOT NULL,
               AuthData TEXT DEFAULT NULL
