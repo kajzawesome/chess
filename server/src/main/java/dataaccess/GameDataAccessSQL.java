@@ -100,9 +100,21 @@ public class GameDataAccessSQL {
 
     public List<GameData> listGames() {
         List<GameData> games = new ArrayList<>();
-        int numGames = numGames();
-        for (int i = 0; i < numGames; i++) {
-            i = i+1; //placeholder
+        var statement = "Select GameID, White, Black, GameName, Game FROM Games";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                var rs = ps.executeQuery();
+                while (rs.next()) {
+                    int gameID = rs.getInt("GameID");
+                    String  white = rs.getString("White");
+                    String black = rs.getString("Black");
+                    String gameName = rs.getString("GameName");
+                    String game = rs.getString("Game");
+                    games.add(new GameData(gameID, white, black, gameName, new Gson().fromJson(game, ChessGame.class)));
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
         }
         return games;
     }
