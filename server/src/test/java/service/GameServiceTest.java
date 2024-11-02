@@ -106,8 +106,8 @@ public class GameServiceTest {
         var user3 = new UserData("karamel","yellow","shadowdog@gmail.com");
         var auth3 = serviceUsers.registerUser(user3);
         ResponseException exception = assertThrows(ResponseException.class, () -> serviceGames.joinGame(auth3.authToken(),gameID, "BLACK"));
-        assertEquals("Error: bad request", exception.getMessage());
-        assertEquals(400, exception.StatusCode());
+        assertEquals("Error: already taken", exception.getMessage());
+        assertEquals(403, exception.StatusCode());
     }
 
     @Test

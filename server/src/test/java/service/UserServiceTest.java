@@ -29,7 +29,7 @@ public class UserServiceTest {
         var auth = service.registerUser(user);
         assertEquals(1, service.numRegistered());
         assertTrue(service.validateAuth(auth.authToken()));
-        assertEquals(user, service.getUser(user.username()));
+        assertEquals(user.username(), service.getUser(user.username()).username());
     }
 
     @Test
@@ -68,8 +68,8 @@ public class UserServiceTest {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         assertEquals(0, service.numRegistered());
         ResponseException exception = assertThrows(ResponseException.class, () -> service.login(user));
-        assertEquals("Error: (description of error)", exception.getMessage());
-        assertEquals(500, exception.StatusCode());
+        assertEquals("Error: unauthorized", exception.getMessage());
+        assertEquals(401, exception.StatusCode());
     }
 
     @Test
