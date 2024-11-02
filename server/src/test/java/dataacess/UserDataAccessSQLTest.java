@@ -16,19 +16,19 @@ public class UserDataAccessSQLTest {
     }
 
     @BeforeEach
-    void clear() throws ResponseException {
+    public void clear() throws ResponseException {
         userData.clearAllUsers();
     }
 
     @Test
-    void registerUser() throws ResponseException {
+    public void registerUser() throws ResponseException {
         UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());
     }
 
     @Test
-    void registerUsers() throws ResponseException {
+    public void registerUsers() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user1);
         assertEquals(1,userData.numUsers());
@@ -41,7 +41,7 @@ public class UserDataAccessSQLTest {
     }
 
     @Test
-    void badRegister() throws ResponseException {
+    public void badRegister() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user1);
         assertEquals(1,userData.numUsers());
@@ -52,7 +52,7 @@ public class UserDataAccessSQLTest {
     }
 
     @Test
-    void getUserTest() throws ResponseException, DataAccessException {
+    public void getUserTest() throws ResponseException, DataAccessException {
         UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());
@@ -61,7 +61,7 @@ public class UserDataAccessSQLTest {
     }
 
     @Test
-    void badGetUserTest() throws ResponseException, DataAccessException {
+    public void badGetUserTest() throws ResponseException, DataAccessException {
         UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());
@@ -72,7 +72,7 @@ public class UserDataAccessSQLTest {
     }
 
     @Test
-    void clearAll() throws ResponseException {
+    public void clearAll() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user1);
         UserData user2 = new UserData("Gundybuckets", "xDefiant", "gundy@gmail.com");
@@ -84,7 +84,7 @@ public class UserDataAccessSQLTest {
     }
 
     @Test
-    void alreadyRegistered() throws ResponseException {
+    public void alreadyRegistered() throws ResponseException {
         UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());
@@ -92,7 +92,7 @@ public class UserDataAccessSQLTest {
     }
 
     @Test
-    void notRegistered() {
+    public void notRegistered() {
         assertEquals(0,userData.numUsers());
         assertFalse(userData.alreadyRegistered("kajzawesome"));
     }

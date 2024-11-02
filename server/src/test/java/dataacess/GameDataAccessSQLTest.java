@@ -18,19 +18,19 @@ public class GameDataAccessSQLTest {
 
 
     @BeforeEach
-    void clear() throws ResponseException {
+    public void clear() throws ResponseException {
         gameData.clearAllGames();
     }
 
     @Test
-    void makeGame() throws ResponseException {
+    public void makeGame() throws ResponseException {
         var gameID = gameData.createGame("Chess");
         assertFalse(gameData.validGameID(gameID));
         assertEquals(1, gameData.numGames());
     }
 
     @Test
-    void badMakeGame() throws ResponseException, DataAccessException {
+    public void badMakeGame() throws ResponseException, DataAccessException {
         var gameID = gameData.createGame("");
         assertFalse(gameData.validGameID(gameID));
         assertEquals(1, gameData.numGames());
@@ -38,7 +38,7 @@ public class GameDataAccessSQLTest {
     }
 
     @Test
-    void makeGames() throws ResponseException {
+    public void makeGames() throws ResponseException {
         gameData.createGame("Chess1");
         assertEquals(1, gameData.numGames());
         gameData.createGame("Chess2");
@@ -48,7 +48,7 @@ public class GameDataAccessSQLTest {
     }
 
     @Test
-    void joinGame() throws ResponseException, DataAccessException {
+    public void joinGame() throws ResponseException, DataAccessException {
         var gameID = gameData.createGame("Chess");
         assertEquals(1, gameData.numGames());
         var currGame = gameData.getGame(gameID);
@@ -59,7 +59,7 @@ public class GameDataAccessSQLTest {
     }
 
     @Test
-    void badJoin() throws ResponseException, DataAccessException {
+    public void badJoin() throws ResponseException, DataAccessException {
         var gameID = gameData.createGame("Chess");
         assertEquals(1, gameData.numGames());
         ResponseException exception = assertThrows(ResponseException.class, () -> gameData.getGame(1));
@@ -69,7 +69,7 @@ public class GameDataAccessSQLTest {
     }
 
     @Test
-    void clearAll() throws ResponseException {
+    public void clearAll() throws ResponseException {
         gameData.createGame("Chess1");
         assertEquals(1, gameData.numGames());
         gameData.createGame("Chess2");

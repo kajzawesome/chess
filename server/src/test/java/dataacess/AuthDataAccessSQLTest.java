@@ -19,19 +19,19 @@ public class AuthDataAccessSQLTest {
     }
 
     @BeforeEach
-    void clear() throws ResponseException, SQLException {
+    public void clear() throws ResponseException, SQLException {
         authData.clearAllAuths();
     }
 
     @Test
-    void login() throws ResponseException {
+    public void login() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth = authData.login(user1);
         assertTrue(authData.validateAuth(auth.authToken()));
     }
 
     @Test
-    void logins() throws ResponseException {
+    public void logins() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth1 = authData.login(user1);
         UserData user2 = new UserData("Gundybuckets", "xDefiant", "gundy@gmail.com");
@@ -47,7 +47,7 @@ public class AuthDataAccessSQLTest {
     }
 
     @Test
-    void badLogin() throws ResponseException {
+    public void badLogin() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth = authData.login(user1);
         assertTrue(authData.validateAuth(auth.authToken()));
@@ -55,7 +55,7 @@ public class AuthDataAccessSQLTest {
     }
 
     @Test
-    void getRequest() throws ResponseException, SQLException, DataAccessException {
+    public void getRequest() throws ResponseException, SQLException, DataAccessException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth = authData.login(user1);
         assertEquals(authData.getUser(auth.authToken()).username(), user1.username());
@@ -63,7 +63,7 @@ public class AuthDataAccessSQLTest {
     }
 
     @Test
-    void logout() throws ResponseException {
+    public void logout() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth = authData.login(user1);
         assertTrue(authData.validateAuth(auth.authToken()));
@@ -73,14 +73,14 @@ public class AuthDataAccessSQLTest {
     }
 
     @Test
-    void badLogout() {
+    public void badLogout() {
         ResponseException exception = assertThrows(ResponseException.class, () -> authData.logout("auth"));
         assertEquals("Error: (description of error)", exception.getMessage());
         assertEquals(500, exception.StatusCode());
     }
 
     @Test
-    void clearAll() throws ResponseException, SQLException {
+    public void clearAll() throws ResponseException, SQLException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth1 = authData.login(user1);
         UserData user2 = new UserData("Gundybuckets", "xDefiant", "gundy@gmail.com");
