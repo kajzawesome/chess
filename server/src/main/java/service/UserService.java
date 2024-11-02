@@ -4,6 +4,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import exception.ResponseException;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 import java.util.Objects;
@@ -16,31 +17,30 @@ public class UserService {
     }
 
     public AuthData registerUser(UserData user) throws ResponseException {
-        if (!userData.alreadyRegistered(user.username())) {
-            if (user.password() != null) {
-                userData.addNewUser(user);
-                return authData.login(user);
-            }
-            else {
-                throw new ResponseException(400, "Error: bad request");
-            }
-        }
-        else {
+        if (userData.alreadyRegistered(user.username())) {
             throw new ResponseException(403, "Error: already taken");
         }
+        if (user.password() == null) {
+            throw new ResponseException(400, "Error: bad request");
+        }
+        var registeredUser = new UserData(user.username(), (BCrypt.hashpw(user.password(), BCrypt.gensalt())),  user.email());
+        userData.addNewUser(registeredUser);
+        return authData.login(registeredUser);
     }
 
     public AuthData login(UserData user) throws ResponseException, DataAccessException {
-        if (userData != null && userData.getUser(user.username()) != null) {
-            if (Objects.equals(userData.getUser(user.username()).password(), user.password())) {
-                return authData.login(user);
-            }
-            else {
-                throw new ResponseException(401, "Error: unauthorized");
-            }
+        if (user == null) {
+            throw new ResponseException(400, "Error: bad request");
         }
-        else {
-            throw new ResponseException(500, "Error: (description of error)");
+        var currUser = userData.getUser(user.username());
+        if (currUser == null) {
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+        var hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+        if (BCrypt.checkpw(user.password(), currUser.password())) {
+            return authData.login(user);
+        } else {
+            throw new ResponseException(401, "Error: unauthorized");
         }
     }
 

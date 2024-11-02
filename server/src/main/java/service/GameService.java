@@ -10,20 +10,18 @@ import java.util.Objects;
 
 public class GameService {
     GameDataAccessSQL gameData = new GameDataAccessSQL();
-    AuthDataAccessSQL authData;
+    AuthDataAccessSQL authData = new AuthDataAccessSQL();
 
     public GameService() throws ResponseException, DataAccessException {
     }
 
     public List<GameData> listGames(String auth) throws ResponseException {
-        if (authData != null) {
-            if (authData.validateAuth(auth)) {
-                return gameData.listGames();
-            } else {
-                throw new ResponseException(401, "Error: unauthorized");
-            }
+        if (authData == null) {
+            throw new ResponseException(401, "Error: unauthorized");
         }
-        else {
+        if (authData.validateAuth(auth)) {
+            return gameData.listGames();
+        } else {
             throw new ResponseException(401, "Error: unauthorized");
         }
     }

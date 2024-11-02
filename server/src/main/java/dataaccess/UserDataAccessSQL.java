@@ -38,8 +38,7 @@ public class UserDataAccessSQL {
 
     public void addNewUser(UserData user) throws ResponseException {
         var registerUser = "INSERT INTO Users (Username, Password, Email, User) VALUES (?, ?, ?, ?)";
-        UserData databaseUser = new UserData(user.username(), BCrypt.hashpw(user.password(), BCrypt.gensalt()), user.email());
-        executeUpdate(registerUser, user.username(), databaseUser.password(), user.username(), new Gson().toJson(databaseUser));
+        executeUpdate(registerUser, user.username(), user.password(), user.username(), new Gson().toJson(user));
     }
 
     public boolean alreadyRegistered(String username) {
