@@ -12,7 +12,7 @@ public class GameService {
     GameDataAccessSQL gameData = new GameDataAccessSQL();
     AuthDataAccessSQL authData = new AuthDataAccessSQL();
 
-    public GameService() throws ResponseException, DataAccessException {
+    public GameService() {
     }
 
     public List<GameData> listGames(String auth) throws ResponseException {

@@ -17,7 +17,7 @@ public class Server {
     UserService  user = new UserService();
     GameService game = new GameService();
 
-    public Server() throws ResponseException, DataAccessException {
+    public Server() {
     }
 
     public int run(int desiredPort) {
