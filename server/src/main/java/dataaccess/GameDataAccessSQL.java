@@ -94,7 +94,7 @@ public class GameDataAccessSQL {
     }
 
     public void updateGame(GameData game) throws ResponseException {
-       String statement = "UPDATE Games SET White = ?, Black = ?, Game = ?, GameData = ?, WHERE gameID = ?";
+       String statement = "UPDATE Games SET White = ?, Black = ?, Game = ?, GameData = ? WHERE gameID = ?";
         executeUpdate(statement, game.whiteUsername(), game.blackUsername(), new Gson().toJson(game.getGame()), game, game.gameID());
     }
 
