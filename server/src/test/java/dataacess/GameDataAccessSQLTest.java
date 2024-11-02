@@ -30,6 +30,14 @@ public class GameDataAccessSQLTest {
     }
 
     @Test
+    void badMakeGame() throws ResponseException, DataAccessException {
+        var gameID = gameData.createGame("");
+        assertFalse(gameData.validGameID(gameID));
+        assertEquals(1, gameData.numGames());
+        assertEquals(gameData.getGame(gameID).gameName(),  "");
+    }
+
+    @Test
     void makeGames() throws ResponseException {
         gameData.createGame("Chess1");
         assertEquals(1, gameData.numGames());
@@ -44,10 +52,20 @@ public class GameDataAccessSQLTest {
         var gameID = gameData.createGame("Chess");
         assertEquals(1, gameData.numGames());
         var currGame = gameData.getGame(gameID);
-        gameData.updateGame(new GameData(currGame.gameID(),"kajzawesome", "Gundy", "Chess", currGame.game()));
+        gameData.updateGame(new GameData(currGame.gameID(),"kajzawesome", "Grundy", "Chess", currGame.game()));
         assertEquals(1, gameData.numGames());
         var updatedGame = gameData.getGame(gameID);
         assertNotEquals(currGame, updatedGame);
+    }
+
+    @Test
+    void badJoin() throws ResponseException, DataAccessException {
+        var gameID = gameData.createGame("Chess");
+        assertEquals(1, gameData.numGames());
+        ResponseException exception = assertThrows(ResponseException.class, () -> gameData.getGame(1));
+        assertEquals("Error: (description of error)", exception.getMessage());
+        assertEquals(500, exception.StatusCode());
+        assertEquals(1, gameData.numGames());
     }
 
     @Test
