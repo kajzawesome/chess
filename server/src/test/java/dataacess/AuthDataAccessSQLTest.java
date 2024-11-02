@@ -31,6 +31,30 @@ public class AuthDataAccessSQLTest {
     }
 
     @Test
+    void logins() throws ResponseException {
+        UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
+        AuthData auth1 = authData.login(user1);
+        UserData user2 = new UserData("Gundybuckets", "xDefiant", "gundy@gmail.com");
+        AuthData auth2 = authData.login(user2);
+        UserData user3 = new UserData("Karamel", "yellow", "karamel@gmail.com");
+        AuthData auth3 = authData.login(user3);
+        assertTrue(authData.validateAuth(auth1.authToken()));
+        assertTrue(authData.validateAuth(auth2.authToken()));
+        assertTrue(authData.validateAuth(auth3.authToken()));
+        assertNotEquals(auth1.authToken(), auth2.authToken());
+        assertNotEquals(auth1.authToken(), auth3.authToken());
+        assertNotEquals(auth2.authToken(), auth3.authToken());
+    }
+
+    @Test
+    void badLogin() throws ResponseException {
+        UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
+        AuthData auth = authData.login(user1);
+        assertTrue(authData.validateAuth(auth.authToken()));
+        assertNotEquals("12345", auth.authToken());
+    }
+
+    @Test
     void getRequest() throws ResponseException, SQLException, DataAccessException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth = authData.login(user1);
@@ -44,6 +68,7 @@ public class AuthDataAccessSQLTest {
         AuthData auth = authData.login(user1);
         assertTrue(authData.validateAuth(auth.authToken()));
         authData.logout(auth.authToken());
+        assertFalse(authData.validateAuth(auth.authToken()));
         assertEquals(0, authData.loggedInUsers());
     }
 
