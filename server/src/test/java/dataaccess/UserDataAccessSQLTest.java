@@ -1,7 +1,5 @@
-package dataacess;
+package dataaccess;
 
-import dataaccess.DataAccessException;
-import dataaccess.UserDataAccessSQL;
 import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;

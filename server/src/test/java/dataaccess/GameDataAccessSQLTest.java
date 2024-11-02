@@ -1,7 +1,5 @@
-package dataacess;
+package dataaccess;
 
-import dataaccess.DataAccessException;
-import dataaccess.GameDataAccessSQL;
 import exception.ResponseException;
 
 import model.GameData;

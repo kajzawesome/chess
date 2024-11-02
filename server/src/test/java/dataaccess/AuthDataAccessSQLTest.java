@@ -1,7 +1,5 @@
-package dataacess;
+package dataaccess;
 
-import dataaccess.AuthDataAccessSQL;
-import dataaccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
