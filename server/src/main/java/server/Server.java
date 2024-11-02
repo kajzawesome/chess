@@ -14,10 +14,17 @@ import java.util.List;
 import java.util.Map;
 
 public class Server {
-    UserService  user = new UserService();
-    GameService game = new GameService();
+    UserService  user;
+    GameService game;
 
     public Server() {
+        try {
+            user = new UserService();
+            game = new GameService();
+        }
+        catch (DataAccessException | ResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int run(int desiredPort) {
@@ -36,6 +43,7 @@ public class Server {
         Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
         Spark.exception(ResponseException.class, this::exceptionHandler);
+        Spark.exception(DataAccessException.class, this::dataExceptionHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -102,6 +110,12 @@ public class Server {
 
     private void exceptionHandler(ResponseException exception, Request req, Response res) {
         res.status(exception.StatusCode());
+        record ExceptionMessage(String message) {}
+        res.body(new Gson().toJson(new ExceptionMessage(exception.getMessage())));
+    }
+
+    private void dataExceptionHandler(DataAccessException exception, Request req, Response res) {
+        res.status(500);
         record ExceptionMessage(String message) {}
         res.body(new Gson().toJson(new ExceptionMessage(exception.getMessage())));
     }
