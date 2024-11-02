@@ -19,7 +19,7 @@ public class AuthDataAccessSQL {
     }
 
     public AuthData login(UserData user) throws ResponseException {
-        var login = "INSERT INTO auth (AuthToken, User, AuthData) VALUES (?, ?, ?)";
+        var login = "INSERT INTO auths (AuthToken, User, AuthData) VALUES (?, ?, ?)";
         String userNewAuth = UUID.randomUUID().toString();
         var auth = new AuthData(userNewAuth, user.username());
         executeUpdate(login, userNewAuth, user.username(), new Gson().toJson(auth));
@@ -27,9 +27,9 @@ public class AuthDataAccessSQL {
     }
 
     public void logout(String authToken) throws ResponseException {
-        if (loggedInUsers() != 0 && validateAuth(authToken)) {
-            String logout = "DELETE FROM auth WHERE authToken=?";
-            executeUpdate(logout);
+        if (validateAuth(authToken)) {
+            String logout = "DELETE FROM auths WHERE authToken = ?";
+            executeUpdate(logout, authToken);
         }
         else {
             throw new ResponseException(500, "Error: (description of error)");
@@ -38,12 +38,12 @@ public class AuthDataAccessSQL {
 
     public AuthData getUser(String auth) throws DataAccessException, SQLException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT AuthToken FROM auth WHERE AuthToken = ?";
+            var statement = "SELECT * FROM auths WHERE AuthToken = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, auth);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return readAuth(rs);
+                        return readAuth(rs); // Assumes readAuth(rs) correctly maps the ResultSet to an AuthData object
                     }
                 }
             } catch (SQLException e) {
@@ -55,7 +55,7 @@ public class AuthDataAccessSQL {
 
     public boolean validateAuth(String auth) {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT AuthToken FROM auth WHERE AuthToken = ?";
+            var statement = "SELECT AuthToken FROM auths WHERE AuthToken = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, auth);
                 try (var rs = ps.executeQuery()) {
@@ -79,14 +79,12 @@ public class AuthDataAccessSQL {
     }
 
     public int loggedInUsers() {
-        String count = "SELECT count(*) FROM auths";
+        String countQuery = "SELECT count(*) FROM auths";
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(count, RETURN_GENERATED_KEYS)) {
-                ps.setString(1,count);
-                ps.executeUpdate();
-                var rs = ps.getGeneratedKeys();
+            try (var ps = conn.prepareStatement(countQuery)) {
+                var rs = ps.executeQuery(); // Execute query and get the result set
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    return rs.getInt(1); // Retrieve the count from the first column
                 }
             }
         } catch (SQLException | DataAccessException e) {
@@ -133,11 +131,10 @@ public class AuthDataAccessSQL {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  auths (
-              'AuthToken' String NOT NULL,
-              'User' String NOT NULL,
-              'AuthData' json TEXT DEFAULT NULL,
-              PRIMARY KEY (AuthToken)
-            )
+              AuthToken TEXT NOT NULL,
+              User TEXT NOT NULL,
+              AuthData TEXT DEFAULT NULL
+            );
             """
     };
 

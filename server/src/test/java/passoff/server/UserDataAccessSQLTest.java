@@ -1,31 +1,36 @@
 package passoff.server;
 
-import dataaccess.UserDataAccessMemory;
+import dataaccess.DataAccessException;
+import dataaccess.UserDataAccessSQL;
 import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UserDataAccessMemoryTest {
-    UserDataAccessMemory userData = new UserDataAccessMemory();
+public class UserDataAccessSQLTest {
+    UserDataAccessSQL userData = new UserDataAccessSQL();
+
+    public UserDataAccessSQLTest() throws ResponseException, DataAccessException {
+    }
 
     @BeforeEach
-    void clear() {
+    void clear() throws ResponseException {
         userData.clearAllUsers();
     }
 
     @Test
-    void registerUser() {
+    void registerUser() throws ResponseException {
         UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());
     }
 
     @Test
-    void registerUsers() {
+    void registerUsers() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user1);
         assertEquals(1,userData.numUsers());
@@ -38,15 +43,16 @@ public class UserDataAccessMemoryTest {
     }
 
     @Test
-    void getUserTest() throws ResponseException {
+    void getUserTest() throws ResponseException, DataAccessException {
         UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());
-        assertEquals(user, userData.getUser("kajzawesome"));
+        assertEquals(user.username(), userData.getUser("kajzawesome").username());
+        assertEquals(user.email(), userData.getUser("kajzawesome").email());
     }
 
     @Test
-    void clearAll() {
+    void clearAll() throws ResponseException {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user1);
         UserData user2 = new UserData("Gundybuckets", "xDefiant", "gundy@gmail.com");
@@ -58,7 +64,7 @@ public class UserDataAccessMemoryTest {
     }
 
     @Test
-    void alreadyRegistered() {
+    void alreadyRegistered() throws ResponseException {
         UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());

@@ -21,7 +21,7 @@ public class UserDataAccessSQL {
 
     public UserData getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT UserData FROM Users WHERE Username = ?";
+            var statement = "SELECT * FROM Users WHERE Username = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
@@ -39,14 +39,14 @@ public class UserDataAccessSQL {
     }
 
     public void addNewUser(UserData user) throws ResponseException {
-        var registerUser = "INSERT INTO Users (AuthToken, User, AuthData) VALUES (?, ?, ?)";
+        var registerUser = "INSERT INTO Users (Username, Password, Email, User) VALUES (?, ?, ?, ?)";
         UserData databaseUser = new UserData(user.username(), BCrypt.hashpw(user.password(), BCrypt.gensalt()), user.email());
         executeUpdate(registerUser, user.username(), databaseUser.password(), user.username(), new Gson().toJson(databaseUser));
     }
 
     public boolean alreadyRegistered(String username) {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT AuthToken FROM auth WHERE AuthToken = ?";
+            var statement = "SELECT Username FROM Users WHERE Username = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
@@ -69,12 +69,10 @@ public class UserDataAccessSQL {
     }
 
     public int numUsers() {
-        String count = "SELECT count(*) FROM Users";
+        String countQuery = "SELECT count(*) FROM Users";
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(count, RETURN_GENERATED_KEYS)) {
-                ps.setString(1,count);
-                ps.executeUpdate();
-                var rs = ps.getGeneratedKeys();
+            try (var ps = conn.prepareStatement(countQuery)) {
+                var rs = ps.executeQuery();
                 if (rs.next()) {
                     return rs.getInt(1);
                 }
@@ -122,12 +120,10 @@ public class UserDataAccessSQL {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  Users (
-              'Username' String NOT NULL,
-              'Password' String NOT NULL,
-              'Email' String,
-              'User' json TEXT DEFAULT NULL,
-              PRIMARY KEY (Username),
-              INDEX(Password)
+              Username TEXT NOT NULL,
+              Password TEXT NOT NULL,
+              Email TEXT,
+              User TEXT DEFAULT NULL
             )
             """
     };

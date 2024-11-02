@@ -1,9 +1,12 @@
 package service;
 
+import dataaccess.DataAccessException;
 import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,14 +14,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceTest {
     UserService service = new UserService();
 
+    public UserServiceTest() throws ResponseException, DataAccessException {
+    }
+
     @BeforeEach
-    void clear() throws ResponseException {
+    void clear() throws ResponseException, SQLException {
         service.deleteAuth();
         service.deleteUsers();
     }
 
     @Test
-    void registration() throws ResponseException {
+    void registration() throws ResponseException, DataAccessException {
         var user = new UserData("kajzawesome","charles","kaj.jacobs@gmail.com");
         var auth = service.registerUser(user);
         assertEquals(1, service.numRegistered());

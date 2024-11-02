@@ -35,6 +35,7 @@ public class AuthDataAccessSQLTest {
         UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         AuthData auth = authData.login(user1);
         assertEquals(authData.getUser(auth.authToken()).username(), user1.username());
+        assertEquals(1, authData.loggedInUsers());
     }
 
     @Test

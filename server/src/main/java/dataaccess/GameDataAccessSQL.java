@@ -33,14 +33,14 @@ public class GameDataAccessSQL {
         ChessGame game = new ChessGame();
         String statement = "INSERT INTO Games (GameID, GameName, White, Black, Game, GameData) VALUES (?, ?, ?, ?, ?, ?)";
         GameData gameInfo = new GameData(chessID, null, null, gameName, game);
-        executeUpdate(statement, chessID, gameName, null, null, game, gameInfo);
+        executeUpdate(statement, chessID, gameName, null, null, new Gson().toJson(game), new Gson().toJson(gameInfo));
         return chessID;
     }
 
     public GameData getGame(int gameID) throws DataAccessException, ResponseException {
         if (validateGameID(gameID)) {
             try (var conn = DatabaseManager.getConnection()) {
-                var statement = "SELECT GameID FROM Games WHERE GameID = ?";
+                var statement = "SELECT * FROM Games WHERE GameID = ?";
                 try (var ps = conn.prepareStatement(statement)) {
                     ps.setInt(1, gameID);
                     try (var rs = ps.executeQuery()) {
@@ -95,7 +95,7 @@ public class GameDataAccessSQL {
 
     public void updateGame(GameData game) throws ResponseException {
        String statement = "UPDATE Games SET White = ?, Black = ?, Game = ?, GameData = ?, WHERE gameID = ?";
-        executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.getGame(), new Gson().toJson(game), game.gameID());
+        executeUpdate(statement, game.whiteUsername(), game.blackUsername(), new Gson().toJson(game.getGame()), game, game.gameID());
     }
 
     public List<GameData> listGames() {
@@ -115,10 +115,8 @@ public class GameDataAccessSQL {
     public int numGames() {
         String count = "SELECT count(*) FROM Games";
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(count, RETURN_GENERATED_KEYS)) {
-                ps.setString(1,count);
-                ps.executeUpdate();
-                var rs = ps.getGeneratedKeys();
+            try (var ps = conn.prepareStatement(count)) {
+                var rs = ps.executeQuery();
                 if (rs.next()) {
                     return rs.getInt(1);
                 }
@@ -166,15 +164,12 @@ public class GameDataAccessSQL {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  Games (
-              'GameID' int NOT NULL,
-              'GameName' varchar(256) NOT NULL,
-              'White' String,
-              'Black' String,
-              'Game' ChessGame NOT NULL,
-              'GameData' json TEXT DEFAULT NULL,
-              PRIMARY KEY(GameID),
-              INDEX(White),
-              INDEX(Black)
+              GameID int NOT NULL,
+              GameName varchar(256) NOT NULL,
+              White TEXT,
+              Black TEXT,
+              Game TEXT NOT NULL,
+              GameData TEXT DEFAULT NULL
             )
             """
     };
