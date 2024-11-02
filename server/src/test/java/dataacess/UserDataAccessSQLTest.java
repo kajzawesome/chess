@@ -7,8 +7,7 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserDataAccessSQLTest {
     UserDataAccessSQL userData = new UserDataAccessSQL();
@@ -42,12 +41,34 @@ public class UserDataAccessSQLTest {
     }
 
     @Test
+    void badRegister() throws ResponseException {
+        UserData user1 = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
+        userData.addNewUser(user1);
+        assertEquals(1,userData.numUsers());
+        UserData user2 = new UserData(null, "charlie", "kaj.jacobs@gmail.com");
+        ResponseException exception = assertThrows(ResponseException.class, () -> userData.addNewUser(user2));
+        assertEquals("unable to update database: INSERT INTO Users (Username, Password, Email, User) VALUES (?, ?, ?, ?), Column 'Username' cannot be null", exception.getMessage());
+        assertEquals(500, exception.StatusCode());
+    }
+
+    @Test
     void getUserTest() throws ResponseException, DataAccessException {
         UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());
         assertEquals(user.username(), userData.getUser("kajzawesome").username());
         assertEquals(user.email(), userData.getUser("kajzawesome").email());
+    }
+
+    @Test
+    void badGetUserTest() throws ResponseException, DataAccessException {
+        UserData user = new UserData("kajzawesome", "charlie", "kaj.jacobs@gmail.com");
+        userData.addNewUser(user);
+        assertEquals(1,userData.numUsers());
+        assertEquals(user.username(), userData.getUser("kajzawesome").username());
+        assertEquals(user.email(), userData.getUser("kajzawesome").email());
+        var exception = userData.getUser("hi");
+        assertNull(exception);
     }
 
     @Test
@@ -68,5 +89,11 @@ public class UserDataAccessSQLTest {
         userData.addNewUser(user);
         assertEquals(1,userData.numUsers());
         assertTrue(userData.alreadyRegistered("kajzawesome"));
+    }
+
+    @Test
+    void notRegistered() {
+        assertEquals(0,userData.numUsers());
+        assertFalse(userData.alreadyRegistered("kajzawesome"));
     }
 }
