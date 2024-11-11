@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import exception.ResponseException;
 import java.io.IOException;
@@ -34,6 +35,17 @@ public class ServerFacade {
         var path = "/session";
         this.makeRequest("DELETE", path, auth, null);
     }
+
+    public GameData[] listGames(String auth) throws ResponseException {
+        var path = "/game";
+        record listGamesResponse(GameData[] gameData){}
+        var response = this.makeRequest("GET", path, auth, listGamesResponse.class);
+        return response.gameData();
+    }
+
+
+
+    //helper functions
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
