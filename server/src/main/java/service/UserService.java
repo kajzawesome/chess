@@ -7,7 +7,6 @@ import exception.ResponseException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
-import java.util.Objects;
 
 public class UserService {
     UserDataAccessSQL userData = new UserDataAccessSQL();
