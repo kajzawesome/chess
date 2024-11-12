@@ -23,8 +23,8 @@ public class ChessClient {
                 case "login" -> login(params);
                 case "creategame" -> createGame(params);
                 case "joingame" -> joinGame(params);
-                case "listgames" -> listGames(params);
-                case "logout" -> logout(params);
+                case "listgames" -> listGames();
+                case "logout" -> logout();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -63,18 +63,22 @@ public class ChessClient {
         if (params.length >= 2) {
             int gameID = Integer.parseInt(params[0]);
             server.joinGame(gameID, params[1]);
-            return String.format("You join %s team in game %d", params[1], gameID);
+            return String.format("You joined %s team in game %d", params[1], gameID);
         }
         throw new ResponseException(400, "Expected: <gameID> <teamColor>");
     }
 
-    public String listGames(String... params) {
-        if (params.length >= 3) {
-            return server.listGames();
+    public String listGames() throws ResponseException {
+        String allGames = server.listGames();
+        if (allGames == null) {
+            return "There are no games currently";
+        }
+        return "Games: \n" + allGames;
     }
 
-    public String logout(String... params) throws ResponseException {
-
+    public String logout() throws ResponseException {
+        server.logout();
+        return "Successfully logged out";
     }
 
     public String help() {

@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 
 public class ServerFacade {
 
@@ -31,16 +32,16 @@ public class ServerFacade {
         return this.makeRequest("POST", path, user, AuthData.class);
     }
 
-    public void logout(String auth) throws ResponseException {
+    public void logout() throws ResponseException {
         var path = "/session";
-        this.makeRequest("DELETE", path, auth, null);
+        this.makeRequest("DELETE", path, null, null);
     }
 
-    public GameData[] listGames(String auth) throws ResponseException {
+    public String listGames() throws ResponseException {
         var path = "/game";
         record listGamesResponse(GameData[] gameData){}
-        var response = this.makeRequest("GET", path, auth, listGamesResponse.class);
-        return response.gameData();
+        var response = this.makeRequest("GET", path, null, listGamesResponse.class);
+        return Arrays.toString(response.gameData());
     }
 
     public int createGame(String gameName) throws ResponseException {
