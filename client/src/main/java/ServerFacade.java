@@ -43,7 +43,15 @@ public class ServerFacade {
         return response.gameData();
     }
 
+    public int createGame(String gameName) throws ResponseException {
+        var path = "/game";
+        return this.makeRequest("POST", path, gameName, int.class);
+    }
 
+    public void joinGame(int gameID) throws ResponseException {
+        var path = "/game";
+        this.makeRequest("PUT", path, gameID, int.class);
+    }
 
     //helper functions
 
