@@ -21,6 +21,10 @@ public class ChessClient {
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
+                case "creategame" -> createGame(params);
+                case "joingame" -> joinGame(params);
+                case "listgames" -> listGames(params);
+                case "logout" -> logout(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -45,6 +49,32 @@ public class ChessClient {
             return String.format("%s is now registered", user.username());
         }
         throw new ResponseException(400, "Expected: <yourname> <yourpassword>");
+    }
+
+    public String createGame(String... params) throws ResponseException {
+        if (params.length >= 1) {
+            int gameID = server.createGame(params[0]);
+            return String.format("Created game: %s - %d", params[0], gameID);
+        }
+        throw new ResponseException(400, "Expected: <gameName>");
+    }
+
+    public String joinGame(String... params) throws ResponseException {
+        if (params.length >= 2) {
+            int gameID = Integer.parseInt(params[0]);
+            server.joinGame(gameID, params[1]);
+            return String.format("You join %s team in game %d", params[1], gameID);
+        }
+        throw new ResponseException(400, "Expected: <gameID> <teamColor>");
+    }
+
+    public String listGames(String... params) {
+        if (params.length >= 3) {
+            return server.listGames();
+    }
+
+    public String logout(String... params) throws ResponseException {
+
     }
 
     public String help() {
