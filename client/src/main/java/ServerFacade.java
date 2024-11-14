@@ -16,21 +16,28 @@ import java.util.Arrays;
 public class ServerFacade {
 
     private final String serverUrl;
+    private String auth;
 
     public ServerFacade(String url) {
         serverUrl = url;
     }
 
+    public void setAuth(String auth) { this.auth = auth;}
+
     //register each end point
 
     public AuthData createUser(UserData user) throws ResponseException {
         var path = "/user";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        AuthData request = this.makeRequest("POST", path, user, AuthData.class);
+        setAuth(request.authToken());
+        return request;
     }
 
     public AuthData login(UserData user) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        AuthData request = this.makeRequest("POST", path, user, AuthData.class);
+        setAuth(request.authToken());
+        return request;
     }
 
     public void logout() throws ResponseException {
@@ -70,7 +77,7 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
+            http.writeHEar(auth);
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
@@ -109,7 +116,6 @@ public class ServerFacade {
         }
         return response;
     }
-
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
