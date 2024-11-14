@@ -117,7 +117,7 @@ public class ChessClient {
 
     public void printWhiteBoard(int gameID) throws ResponseException {
         //top part
-        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A  B  C  D  E  F  G  H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
+        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A   B  C  D   E   F  G   H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
         String tileColor;
         String white = SET_TEXT_COLOR_GREEN;
         String black = SET_TEXT_COLOR_RED;
@@ -132,20 +132,20 @@ public class ChessClient {
             else {
                 tileColor = SET_BG_COLOR_BLACK;
             }
-            for (int j = 0; j < 8; j++) {
+            for (int j = 1; j < 9; j++) {
                 ChessPosition tile = new ChessPosition(i, j);
-                ChessPiece piece = game.getPiece(tile);
+                ChessPiece pieces = game.getPiece(tile);
                 row.append(tileColor);
                 if (tileColor.equals(SET_BG_COLOR_BLACK)) {
                     tileColor = SET_BG_COLOR_WHITE;
                 } else {
                     tileColor = SET_BG_COLOR_BLACK;
                 }
-                if (piece == null) {
+                if (pieces == null) {
                     row.append(EMPTY);
                 }
-                else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                    switch (piece.getPieceType()) {
+                else if (pieces.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    switch (pieces.getPieceType()) {
                         case KING -> row.append(white).append(WHITE_KING);
                         case QUEEN -> row.append(white).append(WHITE_QUEEN);
                         case BISHOP -> row.append(white).append(WHITE_BISHOP);
@@ -155,7 +155,7 @@ public class ChessClient {
                     }
                 }
                 else {
-                    switch (piece.getPieceType()) {
+                    switch (pieces.getPieceType()) {
                         case KING -> row.append(black).append(BLACK_KING);
                         case QUEEN -> row.append(black).append(BLACK_QUEEN);
                         case BISHOP -> row.append(black).append(BLACK_BISHOP);
@@ -169,19 +169,19 @@ public class ChessClient {
             System.out.println(row);
         }
 
-        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A  B  C  D  E  F  G  H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
+        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A   B  C  D   E   F  G   H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
     }
 
     public void printBlackBoard(int gameID) throws ResponseException {
         //top part
-        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A  B  C  D  E  F  G  H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
+        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A   B  C  D   E   F  G   H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
         String tileColor;
         String white = SET_TEXT_COLOR_GREEN;
         String black = SET_TEXT_COLOR_RED;
         ChessBoard game = server.getGame(gameID).getBoard();
         StringBuilder row;
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 1; i < 9; i++) {
                 row = new StringBuilder(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + ' ' + i + ' ');
                 if (i % 2 == 0) {
                     tileColor = SET_BG_COLOR_WHITE;
@@ -189,7 +189,7 @@ public class ChessClient {
                 else {
                     tileColor = SET_BG_COLOR_BLACK;
                 }
-                for (int j = 0; j < 8; j++) {
+                for (int j = 1; j < 9; j++) {
                     ChessPosition tile = new ChessPosition(i, j);
                     ChessPiece piece = game.getPiece(tile);
                     row.append(tileColor);
@@ -225,6 +225,6 @@ public class ChessClient {
                 row.append(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + ' ').append(i).append(' ').append(RESET_BG_COLOR);
                 System.out.println(row);
             }
-            System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A  B  C  D  E  F  G  H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
+            System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A   B  C  D   E   F  G   H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
     }
 }
