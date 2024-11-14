@@ -1,5 +1,7 @@
 import java.util.Scanner;
-import ui.EscapeSequences.*;
+
+import static ui.EscapeSequences.EMPTY;
+
 
 public class Repl {
     private final ChessClient client;
@@ -9,7 +11,8 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 ♕ Welcome to 240 Chess. Type Help to get started. ♕");
+        System.out.println("♕ Welcome to 240 Chess. Type Help to get started. ♕");
+        System.out.println(EMPTY);
         System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -20,7 +23,7 @@ public class Repl {
 
             try {
                 result = client.eval(line);
-                System.out.print("\u001b[34m" + result);
+                System.out.print(result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);

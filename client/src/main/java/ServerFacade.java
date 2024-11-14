@@ -1,3 +1,4 @@
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
@@ -56,6 +57,12 @@ public class ServerFacade {
     }
 
     //helper functions
+
+    public ChessGame getGame(int gameID) throws ResponseException {
+        var path = "/game";
+        var response = this.makeRequest("GET", path, null, GameData.class);
+        return response.game();
+    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
