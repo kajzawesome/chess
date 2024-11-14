@@ -14,7 +14,7 @@ import static ui.EscapeSequences.*;
 public class ChessClient {
     private final ServerFacade server;
     private final String serverUrl;
-    private String auth;
+    private String auth = null;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -54,7 +54,7 @@ public class ChessClient {
     public String login(String... params) throws ResponseException {
         if (params.length >= 3) {
             UserData user = new UserData(params[0], params[1], params[2]);
-            AuthData auth = server.createUser(user);
+            AuthData auth = server.login(user);
             this.auth = auth.authToken();
             return String.format("%s is now registered", user.username());
         }
@@ -63,7 +63,7 @@ public class ChessClient {
 
     public String createGame(String... params) throws ResponseException {
         if (params.length >= 1) {
-            int gameID = server.createGame(params[0]);
+            int gameID = server.createGame(auth, params[0]);
             printBoard(gameID);
             return String.format("Created game: %s - %d", params[0], gameID);
         }
@@ -73,7 +73,7 @@ public class ChessClient {
     public String joinGame(String... params) throws ResponseException {
         if (params.length >= 2) {
             int gameID = Integer.parseInt(params[0]);
-            server.joinGame(gameID, params[1]);
+            server.joinGame(auth, gameID, params[1]);
             if (Objects.equals(params[1], "white") || Objects.equals(params[1], "observer")) {
                 printWhiteBoard(gameID);
             }
@@ -86,7 +86,7 @@ public class ChessClient {
     }
 
     public String listGames() throws ResponseException {
-        String allGames = server.listGames();
+        String allGames = server.listGames(auth);
         if (allGames == null) {
             return "There are no games currently";
         }
@@ -94,7 +94,7 @@ public class ChessClient {
     }
 
     public String logout() throws ResponseException {
-        server.logout();
+        server.logout(auth);
         return "Successfully logged out";
     }
 
@@ -121,7 +121,7 @@ public class ChessClient {
         String tileColor;
         String white = SET_TEXT_COLOR_GREEN;
         String black = SET_TEXT_COLOR_RED;
-        ChessBoard game = server.getGame(gameID).getBoard();
+        ChessBoard game = server.getGame(auth, gameID).getBoard();
         StringBuilder row;
 
         for (int i = 8; i > 0; i--) {
@@ -178,7 +178,7 @@ public class ChessClient {
         String tileColor;
         String white = SET_TEXT_COLOR_GREEN;
         String black = SET_TEXT_COLOR_RED;
-        ChessBoard game = server.getGame(gameID).getBoard();
+        ChessBoard game = server.getGame(auth, gameID).getBoard();
         StringBuilder row;
 
         for (int i = 1; i < 9; i++) {
