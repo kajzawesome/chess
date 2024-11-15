@@ -52,7 +52,7 @@ public class ChessClient {
     }
 
     public String login(String... params) throws ResponseException {
-        if (params.length >= 3) {
+        if (params.length >= 2) {
             UserData user = new UserData(params[0], params[1], params[2]);
             AuthData auth = server.login(user);
             this.auth = auth.authToken();
@@ -95,6 +95,7 @@ public class ChessClient {
 
     public String logout() throws ResponseException {
         server.logout(auth);
+        this.auth = null;
         return "Successfully logged out";
     }
 
