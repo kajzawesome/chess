@@ -1,0 +1,43 @@
+# Chess in Docker. Use the Makefile shortcuts: make up / make down / make client
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-chess}
+    volumes:
+      - chess-data:/var/lib/mysql  # games and users survive `make down`
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+    # No port published, so it won't clash with a MySQL already running on your machine
+
+  server:
+    build: .
+    image: chess-app
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: chess
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-chess}
+    ports:
+      - "${CHESS_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Interactive terminal client. Started with `make client`, not by `make up`.
+  client:
+    image: chess-app
+    command: ["java", "-cp", "client/client.jar:client/lib/*", "Main", "http://server:8080"]
+    stdin_open: true
+    tty: true
+    depends_on:
+      - server
+    profiles: ["client"]
+
+volumes:
+  chess-data:

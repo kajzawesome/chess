@@ -50,3 +50,20 @@ java -jar client/target/client-jar-with-dependencies.jar
 
 ♕ 240 Chess Client: chess.ChessPiece@7852e922
 ```
+
+## Docker
+
+Run the whole thing (MySQL + server) in Docker with these shortcuts. Requires Docker Desktop and `make`.
+
+| Command        | Description                                                       |
+| -------------- | ----------------------------------------------------------------- |
+| `make up`      | Build and start the database and server on http://localhost:8080  |
+| `make client`  | Open a chess client in this terminal (run in a second terminal for player 2) |
+| `make down`    | Stop everything (users and games are kept)                        |
+| `make logs`    | Follow the server log                                             |
+| `make ps`      | Show what's running                                               |
+| `make restart` | Stop and start again                                              |
+| `make rebuild` | Rebuild after code changes, then start                            |
+| `make reset`   | Stop everything and delete all saved users and games              |
+
+The database password defaults to `chess`. To change it, or the server port, create a `.env` file with `DB_PASSWORD=...` or `CHESS_PORT=...`.

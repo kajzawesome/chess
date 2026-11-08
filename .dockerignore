@@ -1,0 +1,8 @@
+**/target
+.git
+.idea
+*.iml
+starter-code
+# Keep your local MySQL password out of the image; Docker passes DB_* variables instead
+server/src/main/resources/db.properties
+.env

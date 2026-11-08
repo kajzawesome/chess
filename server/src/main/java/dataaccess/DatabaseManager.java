@@ -10,27 +10,39 @@ public class DatabaseManager {
     private static final String CONNECTION_URL;
 
     /*
-     * Load the database information for the db.properties file.
+     * Load the database information. Environment variables (DB_HOST, DB_PORT, DB_NAME,
+     * DB_USER, DB_PASSWORD) win; anything not set falls back to db.properties.
+     * Docker uses the environment variables; local runs use db.properties.
      */
     static {
         try {
+            Properties props = new Properties();
             try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
-                if (propStream == null) {
-                    throw new Exception("Unable to load db.properties");
+                if (propStream != null) {
+                    props.load(propStream);
                 }
-                Properties props = new Properties();
-                props.load(propStream);
-                DATABASE_NAME = props.getProperty("db.name");
-                USER = props.getProperty("db.user");
-                PASSWORD = props.getProperty("db.password");
-
-                var host = props.getProperty("db.host");
-                var port = Integer.parseInt(props.getProperty("db.port"));
-                CONNECTION_URL = String.format("jdbc:mysql://%s:%d", host, port);
             }
+            DATABASE_NAME = setting(props, "DB_NAME", "db.name");
+            USER = setting(props, "DB_USER", "db.user");
+            PASSWORD = setting(props, "DB_PASSWORD", "db.password");
+
+            var host = setting(props, "DB_HOST", "db.host");
+            var port = Integer.parseInt(setting(props, "DB_PORT", "db.port"));
+            CONNECTION_URL = String.format("jdbc:mysql://%s:%d", host, port);
         } catch (Exception ex) {
-            throw new RuntimeException("unable to process db.properties. " + ex.getMessage());
+            throw new RuntimeException("unable to load database settings. " + ex.getMessage());
         }
+    }
+
+    private static String setting(Properties props, String envName, String propName) throws Exception {
+        var value = System.getenv(envName);
+        if (value == null || value.isEmpty()) {
+            value = props.getProperty(propName);
+        }
+        if (value == null) {
+            throw new Exception("set " + envName + " or " + propName + " in db.properties");
+        }
+        return value;
     }
 
     /**
