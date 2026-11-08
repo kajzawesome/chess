@@ -1,7 +1,8 @@
+package client;
+
 import java.util.Scanner;
 
-import static ui.EscapeSequences.EMPTY;
-
+import static ui.EscapeSequences.*;
 
 public class Repl {
     private final ChessClient client;
@@ -11,28 +12,31 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("♕ Welcome to 240 Chess. Type Help to get started. ♕");
-        System.out.println(EMPTY);
+        System.out.println("♕ Welcome to 240 Chess. Type help to get started. ♕");
         System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
             printPrompt();
+            if (!scanner.hasNextLine()) {
+                break;
+            }
             String line = scanner.nextLine();
-
             try {
                 result = client.eval(line);
-                System.out.print(result);
+                if (!result.equals("quit")) {
+                    System.out.print(SET_TEXT_COLOR_BLUE + result + RESET_TEXT_COLOR);
+                }
             } catch (Throwable e) {
-                var msg = e.toString();
-                System.out.print(msg);
+                System.out.print(SET_TEXT_COLOR_RED + e.getMessage() + RESET_TEXT_COLOR);
             }
         }
-        System.out.println();
+        System.out.println("\nGoodbye!");
     }
 
     private void printPrompt() {
-        System.out.print("\n"); //fill background here?
+        String state = client.isLoggedIn() ? "[LOGGED_IN]" : "[LOGGED_OUT]";
+        System.out.print("\n" + RESET_TEXT_COLOR + state + " >>> " + SET_TEXT_COLOR_GREEN);
     }
 }

@@ -1,10 +1,6 @@
-import chess.ChessBoard;
 import chess.ChessGame;
+import client.Repl;
 import chess.ChessPiece;
-import chess.ChessPosition;
-
-import static ui.EscapeSequences.*;
-import static ui.EscapeSequences.RESET_TEXT_COLOR;
 
 public class Main {
     public static void main(String[] args) {

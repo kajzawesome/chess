@@ -23,10 +23,10 @@ public class GameDataAccessSQL {
     }
 
     public int createGame(String gameName) throws ResponseException {
-        int chessID = random.nextInt(1000);
+        int chessID = random.nextInt(1, 10000);
         boolean b = validGameID(chessID);
         while (!b) {
-            chessID = random.nextInt();
+            chessID = random.nextInt(1, Integer.MAX_VALUE);
             b = validGameID(chessID);
         }
         ChessGame game = new ChessGame();

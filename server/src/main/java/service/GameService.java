@@ -68,7 +68,6 @@ public class GameService {
 
     public void deleteGames() throws ResponseException {
         gameData.clearAllGames();
-        authData = null;
     }
 
     public void updateAuthData(AuthDataAccessSQL auths) {

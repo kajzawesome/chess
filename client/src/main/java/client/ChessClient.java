@@ -1,37 +1,47 @@
-import chess.ChessBoard;
+package client;
+
 import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
 import exception.ResponseException;
-import model.AuthData;
-import model.UserData;
+import model.GameData;
+import ui.BoardPrinter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
-
-import static ui.EscapeSequences.*;
+import java.util.List;
 
 public class ChessClient {
     private final ServerFacade server;
-    private final String serverUrl;
     private String auth = null;
+    private String username = null;
+    // Games from the last "list", so users can refer to them by number instead of ID
+    private List<GameData> lastListedGames = new ArrayList<>();
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
+    }
+
+    public boolean isLoggedIn() {
+        return auth != null;
     }
 
     public String eval(String input) {
         try {
-            var tokens = input.toLowerCase().split(" ");
-            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var tokens = input.trim().split("\\s+");
+            var cmd = tokens[0].toLowerCase();
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            if (!isLoggedIn()) {
+                return switch (cmd) {
+                    case "register" -> register(params);
+                    case "login" -> login(params);
+                    case "quit" -> "quit";
+                    default -> help();
+                };
+            }
             return switch (cmd) {
-                case "register" -> register(params);
-                case "login" -> login(params);
-                case "creategame" -> createGame(params);
-                case "joingame" -> joinGame(params);
-                case "listgames" -> listGames();
+                case "create" -> createGame(params);
+                case "list" -> listGames();
+                case "play", "join" -> playGame(params);
+                case "observe" -> observeGame(params);
                 case "logout" -> logout();
                 case "quit" -> "quit";
                 default -> help();
@@ -42,190 +52,121 @@ public class ChessClient {
     }
 
     public String register(String... params) throws ResponseException {
-        if (params.length >= 3) {
-            UserData user = new UserData(params[0], params[1], params[2]);
-            AuthData auth = server.createUser(user);
-            this.auth = auth.authToken();
-            return String.format("%s is now registered", user.username());
+        if (params.length != 3) {
+            throw new ResponseException(400, "Expected: register <USERNAME> <PASSWORD> <EMAIL>");
         }
-        throw new ResponseException(400, "Expected: <yourname> <yourpassword> <youremail>");
+        var authData = server.register(params[0], params[1], params[2]);
+        auth = authData.authToken();
+        username = authData.username();
+        return String.format("Registered and logged in as %s.\n%s", username, help());
     }
 
     public String login(String... params) throws ResponseException {
-        if (params.length >= 2) {
-            UserData user = new UserData(params[0], params[1], params[2]);
-            AuthData auth = server.login(user);
-            this.auth = auth.authToken();
-            return String.format("%s is now registered", user.username());
+        if (params.length != 2) {
+            throw new ResponseException(400, "Expected: login <USERNAME> <PASSWORD>");
         }
-        throw new ResponseException(400, "Expected: <yourname> <yourpassword>");
-    }
-
-    public String createGame(String... params) throws ResponseException {
-        if (params.length >= 1) {
-            int gameID = server.createGame(auth, params[0]);
-            printBoard(gameID);
-            return String.format("Created game: %s - %d", params[0], gameID);
-        }
-        throw new ResponseException(400, "Expected: <gameName>");
-    }
-
-    public String joinGame(String... params) throws ResponseException {
-        if (params.length >= 2) {
-            int gameID = Integer.parseInt(params[0]);
-            server.joinGame(auth, gameID, params[1]);
-            if (Objects.equals(params[1], "white") || Objects.equals(params[1], "observer")) {
-                printWhiteBoard(gameID);
-            }
-            else {
-                printBlackBoard(gameID);
-            }
-            return String.format("You joined %s team in game %d", params[1], gameID);
-        }
-        throw new ResponseException(400, "Expected: <gameID> <teamColor>");
-    }
-
-    public String listGames() throws ResponseException {
-        String allGames = server.listGames(auth);
-        if (allGames == null) {
-            return "There are no games currently";
-        }
-        return "Games: \n" + allGames;
+        var authData = server.login(params[0], params[1]);
+        auth = authData.authToken();
+        username = authData.username();
+        return String.format("Logged in as %s.\n%s", username, help());
     }
 
     public String logout() throws ResponseException {
         server.logout(auth);
-        this.auth = null;
-        return "Successfully logged out";
+        auth = null;
+        username = null;
+        lastListedGames = new ArrayList<>();
+        return "Logged out.\n" + help();
+    }
+
+    public String createGame(String... params) throws ResponseException {
+        if (params.length < 1) {
+            throw new ResponseException(400, "Expected: create <NAME>");
+        }
+        String name = String.join(" ", params);
+        server.createGame(auth, name);
+        return String.format("Created game '%s'. Type 'list' to see its number.", name);
+    }
+
+    public String listGames() throws ResponseException {
+        lastListedGames = new ArrayList<>(server.listGames(auth));
+        if (lastListedGames.isEmpty()) {
+            return "There are no games yet. Create one with: create <NAME>";
+        }
+        var out = new StringBuilder("Games:\n");
+        for (int i = 0; i < lastListedGames.size(); i++) {
+            var g = lastListedGames.get(i);
+            out.append(String.format("  %d. %-20s white: %-12s black: %s\n", i + 1, g.gameName(),
+                    playerName(g.whiteUsername()), playerName(g.blackUsername())));
+        }
+        return out.toString();
+    }
+
+    public String playGame(String... params) throws ResponseException {
+        if (params.length != 2) {
+            throw new ResponseException(400, "Expected: play <NUMBER> <WHITE|BLACK>");
+        }
+        var game = gameFromNumber(params[0]);
+        ChessGame.TeamColor color;
+        try {
+            color = ChessGame.TeamColor.valueOf(params[1].toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseException(400, "Color must be WHITE or BLACK");
+        }
+        server.joinGame(auth, game.gameID(), color.name());
+        return String.format("Joined '%s' as %s.\n%s", game.gameName(), color, drawBoard(game, color));
+    }
+
+    public String observeGame(String... params) throws ResponseException {
+        if (params.length != 1) {
+            throw new ResponseException(400, "Expected: observe <NUMBER>");
+        }
+        var game = gameFromNumber(params[0]);
+        return String.format("Observing '%s'.\n%s", game.gameName(), drawBoard(game, ChessGame.TeamColor.WHITE));
     }
 
     public String help() {
+        if (!isLoggedIn()) {
+            return """
+                    register <USERNAME> <PASSWORD> <EMAIL> - create an account
+                    login <USERNAME> <PASSWORD> - log in to play
+                    quit - exit the program
+                    help - show these commands
+                    """;
+        }
         return """
-                - register <yourname> <yourpassword> <youremail>
-                - login <yourname> <yourpassword>
-                - createGame <gameName>
-                - joinGame <gameID>
-                - listGames
-                - logout
-                - quit
+                create <NAME> - create a game
+                list - list games
+                play <NUMBER> <WHITE|BLACK> - join a game
+                observe <NUMBER> - watch a game
+                logout - log out
+                quit - exit the program
+                help - show these commands
                 """;
     }
 
-    public void printBoard(int gameID) throws ResponseException {
-        printWhiteBoard(gameID);
-        printBlackBoard(gameID);
-    }
-
-    public void printWhiteBoard(int gameID) throws ResponseException {
-        //top part
-        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A   B  C  D   E   F  G   H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
-        String tileColor;
-        String white = SET_TEXT_COLOR_GREEN;
-        String black = SET_TEXT_COLOR_RED;
-        ChessBoard game = server.getGame(auth, gameID).getBoard();
-        StringBuilder row;
-
-        for (int i = 8; i > 0; i--) {
-            row = new StringBuilder(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + ' ' + i + ' ');
-            if (i % 2 == 0) {
-                tileColor = SET_BG_COLOR_WHITE;
-            }
-            else {
-                tileColor = SET_BG_COLOR_BLACK;
-            }
-            for (int j = 1; j < 9; j++) {
-                ChessPosition tile = new ChessPosition(i, j);
-                ChessPiece pieces = game.getPiece(tile);
-                row.append(tileColor);
-                if (tileColor.equals(SET_BG_COLOR_BLACK)) {
-                    tileColor = SET_BG_COLOR_WHITE;
-                } else {
-                    tileColor = SET_BG_COLOR_BLACK;
-                }
-                if (pieces == null) {
-                    row.append(EMPTY);
-                }
-                else if (pieces.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                    switch (pieces.getPieceType()) {
-                        case KING -> row.append(white).append(WHITE_KING);
-                        case QUEEN -> row.append(white).append(WHITE_QUEEN);
-                        case BISHOP -> row.append(white).append(WHITE_BISHOP);
-                        case ROOK -> row.append(white).append(WHITE_ROOK);
-                        case KNIGHT -> row.append(white).append(WHITE_KNIGHT);
-                        case PAWN -> row.append(white).append(WHITE_PAWN);
-                    }
-                }
-                else {
-                    switch (pieces.getPieceType()) {
-                        case KING -> row.append(black).append(BLACK_KING);
-                        case QUEEN -> row.append(black).append(BLACK_QUEEN);
-                        case BISHOP -> row.append(black).append(BLACK_BISHOP);
-                        case ROOK -> row.append(black).append(BLACK_ROOK);
-                        case KNIGHT -> row.append(black).append(BLACK_KNIGHT);
-                        case PAWN -> row.append(black).append(BLACK_PAWN);
-                    }
-                }
-            }
-            row.append(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + ' ').append(i).append(' ').append(RESET_BG_COLOR);
-            System.out.println(row);
+    private GameData gameFromNumber(String number) throws ResponseException {
+        int index;
+        try {
+            index = Integer.parseInt(number) - 1;
+        } catch (NumberFormatException ex) {
+            throw new ResponseException(400, "Game number must be a number, e.g. 'play 1 white'");
         }
-
-        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A   B  C  D   E   F  G   H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
+        if (lastListedGames.isEmpty()) {
+            lastListedGames = new ArrayList<>(server.listGames(auth));
+        }
+        if (index < 0 || index >= lastListedGames.size()) {
+            throw new ResponseException(400, "No game with that number. Type 'list' to see games.");
+        }
+        return lastListedGames.get(index);
     }
 
-    public void printBlackBoard(int gameID) throws ResponseException {
-        //top part
-        System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A   B  C  D   E   F  G   H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
-        String tileColor;
-        String white = SET_TEXT_COLOR_GREEN;
-        String black = SET_TEXT_COLOR_RED;
-        ChessBoard game = server.getGame(auth, gameID).getBoard();
-        StringBuilder row;
+    private static String drawBoard(GameData game, ChessGame.TeamColor perspective) {
+        var chessGame = game.game() != null ? game.game() : new ChessGame();
+        return BoardPrinter.draw(chessGame.getBoard(), perspective);
+    }
 
-        for (int i = 1; i < 9; i++) {
-                row = new StringBuilder(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + ' ' + i + ' ');
-                if (i % 2 == 0) {
-                    tileColor = SET_BG_COLOR_WHITE;
-                }
-                else {
-                    tileColor = SET_BG_COLOR_BLACK;
-                }
-                for (int j = 1; j < 9; j++) {
-                    ChessPosition tile = new ChessPosition(i, j);
-                    ChessPiece piece = game.getPiece(tile);
-                    row.append(tileColor);
-                    if (tileColor.equals(SET_BG_COLOR_BLACK)) {
-                        tileColor = SET_BG_COLOR_WHITE;
-                    } else {
-                        tileColor = SET_BG_COLOR_BLACK;
-                    }
-                    if (piece == null) {
-                        row.append(EMPTY);
-                    }
-                    else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        switch (piece.getPieceType()) {
-                            case KING -> row.append(white).append(WHITE_KING);
-                            case QUEEN -> row.append(white).append(WHITE_QUEEN);
-                            case BISHOP -> row.append(white).append(WHITE_BISHOP);
-                            case ROOK -> row.append(white).append(WHITE_ROOK);
-                            case KNIGHT -> row.append(white).append(WHITE_KNIGHT);
-                            case PAWN -> row.append(white).append(WHITE_PAWN);
-                        }
-                    }
-                    else {
-                        switch (piece.getPieceType()) {
-                            case KING -> row.append(black).append(BLACK_KING);
-                            case QUEEN -> row.append(black).append(BLACK_QUEEN);
-                            case BISHOP -> row.append(black).append(BLACK_BISHOP);
-                            case ROOK -> row.append(black).append(BLACK_ROOK);
-                            case KNIGHT -> row.append(black).append(BLACK_KNIGHT);
-                            case PAWN -> row.append(black).append(BLACK_PAWN);
-                        }
-                    }
-                }
-                row.append(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + ' ').append(i).append(' ').append(RESET_BG_COLOR);
-                System.out.println(row);
-            }
-            System.out.println(SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE + EMPTY + " A   B  C  D   E   F  G   H " + EMPTY + RESET_BG_COLOR + RESET_TEXT_COLOR);
+    private static String playerName(String name) {
+        return name == null ? "(open)" : name;
     }
 }

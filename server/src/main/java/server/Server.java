@@ -104,7 +104,6 @@ public class Server {
         game.deleteGames();
         user.deleteAuth();
         user.deleteUsers();
-        game.updateAuthData(null);
         return "";
     }
 
