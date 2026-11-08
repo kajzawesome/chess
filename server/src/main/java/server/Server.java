@@ -1,7 +1,10 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.AuthDataAccessSQL;
 import dataaccess.DataAccessException;
+import dataaccess.GameDataAccessSQL;
+import server.websocket.WebSocketHandler;
 import exception.ResponseException;
 import model.GameData;
 import model.UserData;
@@ -16,11 +19,13 @@ import java.util.Map;
 public class Server {
     UserService  user;
     GameService game;
+    WebSocketHandler webSocketHandler;
 
     public Server() {
         try {
             user = new UserService();
             game = new GameService();
+            webSocketHandler = new WebSocketHandler(new AuthDataAccessSQL(), new GameDataAccessSQL());
         }
         catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
@@ -31,9 +36,8 @@ public class Server {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
-        //This line initializes the server and can be removed once you have a functioning endpoint
-        Spark.init();
+        // The WebSocket route has to be registered before any HTTP routes
+        Spark.webSocket("/ws", webSocketHandler);
 
         Spark.post("/user", this::createUser);
         Spark.post("/session", this::login);

@@ -13,6 +13,8 @@ public class ChessGame {
 
     TeamColor teamColor;
     ChessBoard currentBoard = new ChessBoard();
+    // Set once the game ends by checkmate, stalemate, or resignation; no more moves allowed
+    boolean gameOver = false;
 
     public ChessGame() {
         setTeamTurn(TeamColor.WHITE);
@@ -260,6 +262,14 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return currentBoard;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
 
